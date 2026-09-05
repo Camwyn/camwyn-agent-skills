@@ -14,20 +14,47 @@ All skills in this repository can be installed or live-linked (via NTFS Director
 
 ---
 
-## 📦 Skills Directory
+## 📦 Skills Directory Structure
 
-### 🧠 Obsidian Knowledge Base Suite
+```
+camwyn-agent-skills/
+├── README.md
+├── LICENSE
+├── install.ps1                    # Master recursive installer
+├── install.sh                     # Master recursive installer (bash)
+│
+└── skills/
+    ├── audit-skills/              # IDE-wide dual-pass telemetry & skill auditor
+    │   └── SKILL.md
+    │
+    └── obsidian-rag/              # Unified Obsidian Suite
+        ├── obsidian-config.json.example
+        ├── obsidian-setup/        # Onboarding wizard & vault configuration
+        │   └── SKILL.md
+        ├── obsidian-project-init/ # Project scanner & note bootstrapper
+        │   └── SKILL.md
+        ├── obsidian-rag-grounding/# Knowledge base grounding with cascading overrides
+        │   └── SKILL.md
+        └── obsidian-decision-sync/# Concurrency-safe ADR decision capture
+            └── SKILL.md
+```
+
+---
+
+## 🧠 Obsidian Knowledge Base Suite (`skills/obsidian-rag/`)
+
 Bi-directional sync, RAG grounding, and structured Architectural Decision Records (ADRs) using Obsidian as persistent agent memory.
 
 | Skill | Trigger / Command | Description |
 |---|---|---|
-| **[`obsidian-setup`](skills/obsidian-setup/SKILL.md)** | `/obsidian-setup` | Interactive setup wizard. Discovers available vaults, sets default vault preferences, validates folder structure (`Projects/`, `System/`), and bootstraps global voice/design/architecture notes. |
-| **[`obsidian-project-init`](skills/obsidian-project-init/SKILL.md)** | `/obsidian-init` | Scans vault for current repo, initializes `Projects/<Name>/Overview.md` + `Decisions.md`, or detects drift and prompts for non-destructive merges if present. |
-| **[`obsidian-rag-grounding`](skills/obsidian-rag-grounding/SKILL.md)** | `/obsidian-rag` | Ingests project overview, recent ADRs, and system guidelines with cascading project overrides to ground creative, UI, and coding tasks. |
-| **[`obsidian-decision-sync`](skills/obsidian-decision-sync/SKILL.md)** | `/obsidian-decision` | Formats choices into structured ADRs (*Chosen, Rationale, Rejected Alternatives*) and syncs via safe `etag` concurrency. |
+| **[`obsidian-setup`](skills/obsidian-rag/obsidian-setup/SKILL.md)** | `/obsidian-setup` | Interactive setup wizard. Discovers available vaults, sets default vault preferences, validates folder structure (`Projects/`, `System/`), and bootstraps global voice/design/architecture notes. |
+| **[`obsidian-project-init`](skills/obsidian-rag/obsidian-project-init/SKILL.md)** | `/obsidian-init` | Scans vault for current repo, initializes `Projects/<Name>/Overview.md` + `Decisions.md`, or detects drift and prompts for non-destructive merges if present. |
+| **[`obsidian-rag-grounding`](skills/obsidian-rag/obsidian-rag-grounding/SKILL.md)** | `/obsidian-rag` | Ingests project overview, recent ADRs, and system guidelines with cascading project overrides to ground creative, UI, and coding tasks. |
+| **[`obsidian-decision-sync`](skills/obsidian-rag/obsidian-decision-sync/SKILL.md)** | `/obsidian-decision` | Formats choices into structured ADRs (*Chosen, Rationale, Rejected Alternatives*) and syncs via safe `etag` concurrency. |
 
-### 📊 Telemetry & Audit Suite
-Tools for inspecting agent execution, tracking skill utilization, and optimizing context.
+---
+
+## 📊 Telemetry & Audit Suite (`skills/audit-skills/`)
 
 | Skill | Trigger / Command | Description |
 |---|---|---|
@@ -37,9 +64,7 @@ Tools for inspecting agent execution, tracking skill utilization, and optimizing
 
 ## 🚀 Installation & Live Linking
 
-### Automated Live Linking (Recommended)
-
-Running the install script creates live directory links (junctions on Windows, symlinks on Unix). Any changes you make in this repository are immediately active in your agent sessions with zero copying!
+Running the install script automatically discovers all skills recursively and creates live directory links (junctions on Windows, symlinks on Unix):
 
 #### Windows (PowerShell)
 ```powershell
@@ -54,27 +79,12 @@ chmod +x install.sh
 
 ---
 
-## 🛠️ Adding a New Skill
+## 🛠️ Adding New Skills
 
-To add a new skill to this repository:
-1. Create a new directory under `skills/<your-skill-name>/`.
-2. Add a `SKILL.md` file with YAML frontmatter:
-   ```markdown
-   ---
-   name: your-skill-name
-   description: Brief description of what this skill does and when to invoke it.
-   ---
-
-   # Your Skill Title
-
-   Instructions for the agent...
-   ```
-3. Run `./install.ps1` to link the new skill into `.agents/skills/`.
-4. Commit your changes:
-   ```bash
-   git add .
-   git commit -m "feat: add <your-skill-name> skill"
-   ```
+1. Add your skill folder anywhere under `skills/` (either flat or grouped inside a suite folder like `skills/my-suite/my-skill/`).
+2. Include a `SKILL.md` file with standard YAML frontmatter.
+3. Run `./install.ps1` to link it to your agent skills folder.
+4. Commit your changes to Git.
 
 ---
 

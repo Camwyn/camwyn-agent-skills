@@ -1,0 +1,11 @@
+{
+  "default_vault": "camwyn_codes",
+  "projects_dir": "Projects",
+  "system_dir": "System",
+  "adrs_per_context_limit": 5,
+  "global_notes": {
+    "tone_and_voice": "System/Tone and Voice.md",
+    "design_tokens": "System/Design Tokens.md",
+    "architecture": "System/Architecture Principles.md"
+  }
+}

@@ -13,25 +13,20 @@ mkdir -p "$TARGET_DIR"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-for skill in "$SCRIPT_DIR"/skills/*; do
-  if [ -d "$skill" ]; then
-    skill_name=$(basename "$skill")
-    echo "  [LINK] $skill_name -> $skill"
-    ln -sfn "$skill" "$TARGET_DIR/$skill_name"
-  fi
+# Find all directories containing SKILL.md
+find "$SCRIPT_DIR/skills" -name "SKILL.md" | while read -r skill_file; do
+  skill_folder=$(dirname "$skill_file")
+  skill_name=$(basename "$skill_folder")
+  echo "  [LINK] $skill_name -> $skill_folder"
+  ln -sfn "$skill_folder" "$TARGET_DIR/$skill_name"
 done
 
 CONFIG_TARGET="$HOME/.agents/obsidian-config.json"
-if [ ! -f "$CONFIG_TARGET" ] && [ -f "$SCRIPT_DIR/obsidian-config.json.example" ]; then
+CONFIG_EXAMPLE="$SCRIPT_DIR/skills/obsidian-rag/obsidian-config.json.example"
+if [ ! -f "$CONFIG_TARGET" ] && [ -f "$CONFIG_EXAMPLE" ]; then
   echo "  [CONFIG] Creating default config at $CONFIG_TARGET"
-  cp "$SCRIPT_DIR/obsidian-config.json.example" "$CONFIG_TARGET"
+  cp "$CONFIG_EXAMPLE" "$CONFIG_TARGET"
 fi
 
 echo ""
 echo "All skills installed and active!"
-echo "Available skills:"
-for skill in "$SCRIPT_DIR"/skills/*; do
-  if [ -d "$skill" ]; then
-    echo "  - /$(basename "$skill")"
-  fi
-done
