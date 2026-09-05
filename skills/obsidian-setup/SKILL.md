@@ -1,0 +1,132 @@
+---
+name: obsidian-setup
+description: >
+  Interactive setup wizard for Obsidian integration. Discovers available vaults,
+  configures default vault preferences, validates foundational folder structure
+  (Projects/, System/), and bootstraps core voice/design/architecture notes.
+  Run once on initial setup or anytime you want to reconfigure Obsidian settings.
+---
+
+# Obsidian Integration Setup Wizard
+
+Interactive configuration wizard for connecting AI agent workflows to your Obsidian knowledge base.
+
+---
+
+## 1. Vault Discovery & Configuration
+
+1. **List Available Vaults**:
+   - Call `obsidian_list_vaults` to discover all mounted vault IDs.
+2. **Confirm Default Vault**:
+   - Prompt the user to select or confirm the primary vault (e.g., `camwyn_codes`).
+3. **Persist Configuration**:
+   - Save or update `.agents/obsidian-config.json`:
+     ```json
+     {
+       "default_vault": "camwyn_codes",
+       "projects_dir": "Projects",
+       "system_dir": "System",
+       "adrs_per_context_limit": 5,
+       "global_notes": {
+         "tone_and_voice": "System/Tone and Voice.md",
+         "design_tokens": "System/Design Tokens.md",
+         "architecture": "System/Architecture Principles.md"
+       }
+     }
+     ```
+
+---
+
+## 2. Vault Structure Inspection
+
+Search the configured vault for foundational folders and notes:
+
+1. **Projects Directory (`Projects/`)**:
+   - Query `obsidian_search_vault` with `scope: "Projects"`.
+   - If missing, offer to create `Projects/` directory via `obsidian_create_directory`.
+
+2. **System & Directives Directory (`System/`)**:
+   - Query `obsidian_search_vault` with `scope: "System"`.
+   - If missing, offer to create `System/` directory via `obsidian_create_directory`.
+
+---
+
+## 3. Global Knowledge Note Bootstrapping
+
+Check if foundational global directives exist, and offer to create starter templates for any that are missing:
+
+### A. `System/Tone and Voice.md`
+If missing, offer to create with template:
+```markdown
+---
+title: "Global Tone & Voice Guidelines"
+type: system-directive
+tags: [system, voice, tone, style]
+---
+
+# Tone & Voice Guidelines
+
+Authoritative voice, tone, and communication principles to ground all user-facing copy, documentation, and agent responses.
+
+## Core Tone Principles
+1. **Clear & Concise**: Favor direct, active sentences over verbose fluff.
+2. **Humanized & Natural**: Avoid corporate buzzwords, excessive signpost transitions, and formulaic AI writing patterns.
+3. **Accurate & Unambiguous**: Be precise with technical terminology and instructions.
+
+## UI Copy Standards
+- **Buttons**: Short, action-oriented verbs (e.g. "Create Project", "Sync Changes").
+- **Error Messages**: Explain what happened clearly and provide a concrete recovery action.
+- **Empty States**: Friendly guidance on what to do first.
+```
+
+### B. `System/Design Tokens.md`
+If missing, offer to create with template:
+```markdown
+---
+title: "Global Design System & Styling Rules"
+type: system-directive
+tags: [system, design, styling, tokens]
+---
+
+# Design System & Styling Tokens
+
+Authoritative design rules, typography, and color palettes for web apps and user interfaces.
+
+## Aesthetics & Theme
+- **Theme**: Dark mode first, sleek glassmorphism accents, subtle micro-interactions.
+- **Typography**: Modern Google Fonts (e.g., Inter, Plus Jakarta Sans, Outfit).
+- **Color Palette**: Curated HSL tokens with high contrast and harmonious accent gradients.
+
+## Component Rules
+- Avoid generic browser default inputs; use crafted states (hover, focus-visible, active).
+- Maintain responsive fluid layouts with container queries and modern CSS variables.
+```
+
+### C. `System/Architecture Principles.md`
+If missing, offer to create with template:
+```markdown
+---
+title: "Engineering & Architecture Principles"
+type: system-directive
+tags: [system, architecture, engineering]
+---
+
+# Engineering & Architecture Principles
+
+Core architectural standards across repositories and projects.
+
+## Standards
+- **DRY & Modular**: Keep components focused on a single responsibility.
+- **Explicit over Clever**: Write readable, well-typed, and maintainable code.
+- **Decision Records**: Log all major architectural pivots and rejected alternatives to `Decisions.md`.
+```
+
+---
+
+## 4. Verification & Summary
+
+1. **Verify Tool Permissions**:
+   - Confirm read, write, and search operations succeed against the selected vault.
+2. **Present Final Setup Summary**:
+   - Display configured vault name, detected directories, and available global notes.
+   - Summarize how downstream skills (`obsidian-project-init`, `obsidian-rag-grounding`, `obsidian-decision-sync`) will use this configuration.
