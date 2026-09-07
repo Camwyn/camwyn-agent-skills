@@ -22,7 +22,9 @@ Before executing any sync action, read `.agents/obsidian-config.json`:
    - For commits: verify `auto_sync.on_commit == true`
    - For tasks/TODOs: verify `auto_sync.on_todo == true`
    - For decisions: verify `auto_sync.on_decision == true`
-3. **Resolve Vault**:
+3. **Resolve Provider & Vault**:
+   - Check `provider` in `.agents/obsidian-config.json` (defaults to `"auto"`).
+   - If `"auto"`: prefer MCP toolset (`obsidian_*`), falling back to Local REST API (`127.0.0.1:27124`).
    - Use `default_vault` from `.agents/obsidian-config.json` (e.g. `<VaultName>`).
 4. **Resolve Project Target Path & Worktree Awareness**:
    - Check if current workspace is a **Git Worktree**:
@@ -194,30 +196,47 @@ Triggered when an architectural choice, dependency selection, or styling decisio
 
 ---
 
-## 4. Concurrency & Conflict Protection (Zero Data Loss)
+## 4. Multi-Provider Protocol & Concurrency Protection (Zero Data Loss)
+
+All vault read/write operations route through the active provider adapter (`headless_mcp` or `local_rest_api`):
+
+### A. Provider Operations Adapter Table
+
+| Operation | Headless MCP Toolset (`headless_mcp`) | Obsidian Local REST API (`local_rest_api`) |
+|---|---|---|
+| **Read Note** | `obsidian_read_note(vault, path)` $\rightarrow$ `{ content, etag }` | `GET /vault/<path>` (with `Accept: text/markdown` or JSON) $\rightarrow$ body + `ETag` header |
+| **Edit / Replace** | `obsidian_edit_note(vault, path, content, operation: "replace", if_match)` | `PUT /vault/<path>` with header `If-Match: <etag>`, body: content |
+| **Append** | `obsidian_edit_note(vault, path, content, operation: "append", if_match)` | `POST /vault/<path>` with header `If-Match: <etag>`, body: content |
+| **Prepend** | `obsidian_edit_note(vault, path, content, operation: "prepend", if_match)` | `PATCH /vault/<path>` with header `Operation: prepend` (or read + prepend + PUT) |
+| **Create Note** | `obsidian_create_note(vault, path, content)` | `PUT /vault/<path>` (new file), body: content |
+| **Search Vault** | `obsidian_search_vault(vault, query, scope)` | `POST /search/simple?query=<query>` |
+
+---
+
+### B. Concurrency & Retry Loop
 
 All updates MUST execute through this bounded exponential backoff loop:
 
-0. **MCP Server Reachability Check**:
-   - Verify that the `obsidian` MCP toolset (`obsidian_read_note`, `obsidian_edit_note`) is active and reachable.
-   - If the MCP server is missing, unconfigured, or drops connection:
+0. **Provider Reachability Check**:
+   - Verify that the active provider (MCP toolset or Local REST API) is responsive.
+   - If missing, unconfigured, or connection is dropped:
      - Do NOT crash, throw unhandled exceptions, or block developer git operations.
      - Immediately persist the uncommitted payload to `.agents/pending-sync.json` (or `~/.agents/pending-sync.json`).
      - Emit a clear, non-blocking diagnostic receipt:
-       > ⚠️ **Obsidian Auto-Sync**: Obsidian MCP server is unreachable or not configured.
-       > Queued update to `.agents/pending-sync.json`. Run `/obsidian-setup` or check MCP settings to restore sync.
+       > ⚠️ **Obsidian Auto-Sync**: Configured provider is unreachable or not running.
+       > Queued update to `.agents/pending-sync.json`. Run `/obsidian-setup` or check provider settings to restore sync.
      - Terminate the sync attempt gracefully.
 
 1. **Attempt 1**:
-   - Call `obsidian_read_note`: retrieve markdown content and current `etag`.
-   - Format the update and call `obsidian_edit_note`.
+   - Call provider read note: retrieve markdown content and current `etag`.
+   - Format the update and dispatch write/edit with `if_match: etag`.
 2. **Attempt 2 (on 412 Precondition Failed)**:
    - Pause briefly (500ms).
-   - Re-read note via `obsidian_read_note` to get fresh content and new `etag`.
-   - Re-apply delta to latest content and retry `obsidian_edit_note`.
+   - Re-read note to get fresh content and new `etag`.
+   - Re-apply delta to latest content and retry edit.
 3. **Attempt 3 (on 412 Precondition Failed)**:
    - Pause with jitter (1500ms).
-   - Re-read note via `obsidian_read_note` and re-attempt `obsidian_edit_note`.
+   - Re-read note and re-attempt edit.
 4. **Final Failure Handling (Persist to Replay Queue)**:
    - If Attempt 3 fails with 412 (note is being actively edited in Obsidian desktop):
      - Append the uncommitted payload to `.agents/pending-sync.json` (or `~/.agents/pending-sync.json`):

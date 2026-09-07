@@ -16,9 +16,10 @@ Connects the active codebase to your central Obsidian knowledge vault (resolved 
 
 When triggered:
 
-1. **Resolve Vault Target**:
-   - Check `.agents/obsidian-config.json` for `default_vault` (e.g. resolve `<VaultName>`).
-   - If unsure, missing, or on error, call `obsidian_list_vaults` to confirm available vaults.
+1. **Resolve Provider & Vault Target**:
+   - Check `.agents/obsidian-config.json` for `provider` (defaults to `"auto"`) and `default_vault` (e.g. resolve `<VaultName>`).
+   - Route all vault actions (`search_vault`, `create_directory`, `create_note`, `read_note`, `edit_note`) through the active provider (Headless MCP `obsidian_*` tools or Obsidian Local REST API endpoints).
+   - If unsure, missing, or on error, call provider vault listing to confirm available vaults.
 
 2. **Inspect Current Codebase Context & Workspace Topology**:
    - **Git Worktree Detection**:

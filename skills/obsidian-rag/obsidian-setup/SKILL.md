@@ -11,26 +11,36 @@ description: >
 
 Interactive configuration wizard for connecting AI agent workflows to your Obsidian knowledge base.
 
-## 0. Prerequisite Check & MCP Diagnosis
+## 0. Multi-Provider Detection & Health Check
 
-Before attempting any vault operations, verify that the `obsidian` MCP toolset is available:
+Before attempting any vault operations, detect available communication providers:
 
-1. **Test MCP Toolset**:
-   - Check if `obsidian_list_vaults` exists in the active agent tool definitions and responds.
-2. **If Missing, Unconfigured, or Unreachable**:
+1. **Provider Auto-Detection Priority**:
+   - Check `.agents/obsidian-config.json` for `provider` (defaults to `"auto"`).
+   - **Provider 1: Headless MCP / In-App MCP Toolset (`headless_mcp` / `mcp_connector`)**:
+     - Check if `obsidian_list_vaults` exists in the active agent tool definitions and responds.
+     - If available, probe succeeded using native MCP tools.
+   - **Provider 2: Obsidian Local REST API (`local_rest_api`)**:
+     - If MCP toolset is not present or user selected `local_rest_api`:
+     - Test HTTPS connection to `https://127.0.0.1:27124/` using `OBSIDIAN_REST_API_KEY` (or key from config).
+     - If reachable (HTTP 200 / authentication verified), probe succeeded via Local REST API.
+
+2. **If Neither Provider is Detected**:
    - **Immediately stop** the setup wizard.
-   - Present a clear, actionable diagnostic box with copy-pasteable configuration snippets:
+   - Present a clear, actionable diagnostic guide with setup options for both providers:
 
 ```markdown
-> 🛑 **Obsidian MCP Server Not Detected or Unreachable**
+> 🛑 **Obsidian Provider Not Detected or Unreachable**
 >
-> The Obsidian integration requires the [`obsidian-mcp`](https://github.com/StevenStavrakis/obsidian-mcp) server to communicate with your local Obsidian vault.
+> To connect your AI agent to your Obsidian vault, choose one of the following two providers:
 >
-> ### Quick Setup Guide:
+> ---
+>
+> ### Option A: Headless MCP Server (Recommended for CLI / Background Agents)
+> Uses [`obsidian-mcp`](https://github.com/StevenStavrakis/obsidian-mcp). Operates directly on vault files without requiring the Obsidian desktop app to be open.
 >
 > #### 1. Antigravity IDE
-> Add the server definition to `~/.gemini/config/mcp_config.json`:
->
+> Add to `~/.gemini/config/mcp_config.json`:
 > **Windows**:
 > ```json
 > {
@@ -50,7 +60,6 @@ Before attempting any vault operations, verify that the `obsidian` MCP toolset i
 >   }
 > }
 > ```
->
 > **macOS / Linux**:
 > ```json
 > {
@@ -70,7 +79,7 @@ Before attempting any vault operations, verify that the `obsidian` MCP toolset i
 > ```
 >
 > #### 2. Claude Desktop / Claude Code
-> Add to `claude_desktop_config.json` (under `%APPDATA%\Claude` on Windows or `~/Library/Application Support/Claude` on macOS):
+> Add to `claude_desktop_config.json`:
 > ```json
 > {
 >   "mcpServers": {
@@ -87,31 +96,63 @@ Before attempting any vault operations, verify that the `obsidian` MCP toolset i
 >   }
 > }
 > ```
-> *(On Windows, use `command: "cmd.exe"` with `args: ["/c", "npx", ...]` if npx is not directly resolved).*
+> *(On Windows, use `command: "cmd.exe"` with `args: ["/c", "npx", ...]`)*.
 >
 > #### 3. Cursor
-> Open **Cursor Settings > Features > MCP Servers** and click **Add New MCP Server**:
+> Under **Cursor Settings > Features > MCP Servers**, add:
 > - **Name**: `obsidian`
 > - **Type**: `command`
 > - **Command**: `npx -y obsidian-mcp serve --vault <vault_name>=<absolute_path_to_vault>`
 >
 > ---
 >
-> 🔄 **After Saving**: Restart or reload your AI agent session, then re-run `/obsidian-setup`.
+> ### Option B: Obsidian Local REST API Plugin (Recommended for Live Desktop Users)
+> Uses the [Obsidian Local REST API](https://github.com/coddingtonbear/obsidian-local-rest-api) community plugin. Integrates with live Obsidian desktop plugins (Dataview, Graph View, and canvas refresh).
+>
+> 1. In Obsidian, open **Settings > Community plugins > Browse** and install **Local REST API**.
+> 2. Enable the plugin and copy your generated **API Key** from the plugin settings.
+> 3. Export your API key in your shell profile or environment:
+>    - **Windows (PowerShell)**: `[Environment]::SetEnvironmentVariable("OBSIDIAN_REST_API_KEY", "<your_api_key>", "User")`
+>    - **macOS / Linux**: `export OBSIDIAN_REST_API_KEY="<your_api_key>"`
+> 4. In `.agents/obsidian-config.json`, set `"provider": "local_rest_api"`.
+>
+> ---
+>
+> 🔄 **After Setup**: Restart or reload your AI agent session, then re-run `/obsidian-setup`.
 ```
 
 ---
 
 ## 1. Vault Discovery & Configuration
 
-1. **List Available Vaults**:
-   - Call `obsidian_list_vaults` to discover all mounted vault IDs.
-2. **Confirm Default Vault**:
-   - Prompt the user to select or confirm the primary vault (e.g., `personal_vault` or `notes`).
-3. **Persist Configuration**:
+1. **Resolve Provider**:
+   - If multiple providers respond, prompt the user for their preferred provider (`headless_mcp`, `local_rest_api`, or `auto`).
+2. **List Available Vaults**:
+   - **MCP**: Call `obsidian_list_vaults` to discover all mounted vault IDs.
+   - **Local REST API**: Query `/` to confirm the connected active vault.
+3. **Confirm Default Vault**:
+   - Prompt the user to select or confirm the primary vault (e.g., `personal_vault` or `camwyn`).
+4. **Persist Configuration**:
    - Save or update `.agents/obsidian-config.json`:
      ```json
      {
+       "provider": "auto",
+       "providers": {
+         "headless_mcp": {
+           "type": "mcp_toolset",
+           "description": "Direct filesystem headless MCP server via npx obsidian-mcp"
+         },
+         "local_rest_api": {
+           "type": "https_rest",
+           "base_url": "https://127.0.0.1:27124",
+           "api_key_env": "OBSIDIAN_REST_API_KEY",
+           "insecure_ssl": true
+         },
+         "mcp_connector": {
+           "type": "in_app_mcp",
+           "description": "In-app Obsidian community plugin (obsidian-mcp-plugin) exposing MCP tools"
+         }
+       },
        "default_vault": "my_vault",
        "projects_dir": "Projects",
        "organization_nesting": "auto",
@@ -122,7 +163,12 @@ Before attempting any vault operations, verify that the `obsidian` MCP toolset i
          "enabled": true,
          "on_commit": true,
          "on_decision": true,
-         "on_todo": true
+         "on_todo": true,
+         "filters": {
+           "commit_level": "milestones_only",
+           "rollup_window_hours": 2
+         },
+         "worklog_archive_limit_lines": 1000
        },
        "global_notes": {
          "tone_and_voice": "System/Tone and Voice.md",

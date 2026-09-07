@@ -85,13 +85,16 @@ chmod +x install.sh
 
 ---
 
-### 🔌 Prerequisites (Obsidian MCP Server)
+### 🔌 Prerequisites & Provider Setup
 
-The Obsidian Suite communicates with your local Obsidian vault via Model Context Protocol (MCP) using [`obsidian-mcp`](https://github.com/StevenStavrakis/obsidian-mcp).
+The Obsidian Suite supports two communication providers depending on your workflow:
+
+#### Option A: Headless MCP Server (`obsidian-mcp`) — *Recommended for CLI & Background Agents*
+Direct filesystem access using [`obsidian-mcp`](https://github.com/StevenStavrakis/obsidian-mcp). Operates without needing the Obsidian desktop application running.
 
 Ensure your agent or IDE has the `obsidian` MCP server configured:
 
-#### Antigravity IDE
+##### 1. Antigravity IDE
 Add to `~/.gemini/config/mcp_config.json`:
 - **Windows**:
   ```json
@@ -130,7 +133,7 @@ Add to `~/.gemini/config/mcp_config.json`:
   }
   ```
 
-#### Claude Desktop / Claude Code
+##### 2. Claude Desktop / Claude Code
 Add to `claude_desktop_config.json`:
 ```json
 {
@@ -150,11 +153,29 @@ Add to `claude_desktop_config.json`:
 ```
 *(On Windows, use `"command": "cmd.exe"` with `"args": ["/c", "npx", ...]`)*.
 
-#### Cursor
+##### 3. Cursor
 Under **Cursor Settings > Features > MCP Servers**, add a new server:
 - **Name**: `obsidian`
 - **Type**: `command`
 - **Command**: `npx -y obsidian-mcp serve --vault <vault_name>=<path_to_vault>`
+
+---
+
+#### Option B: Obsidian Local REST API Plugin — *Recommended for Active Desktop Users*
+Communicates with the [Obsidian Local REST API](https://github.com/coddingtonbear/obsidian-local-rest-api) community plugin running inside Obsidian. Immediately triggers in-app events, Dataview indexing, and Canvas refresh.
+
+1. In Obsidian, go to **Settings > Community plugins > Browse** and install **Local REST API**.
+2. Enable the plugin and copy your generated **API Key** from the plugin settings.
+3. Set your environment variable:
+   - **Windows (PowerShell)**:
+     ```powershell
+     [Environment]::SetEnvironmentVariable("OBSIDIAN_REST_API_KEY", "<your_api_key>", "User")
+     ```
+   - **macOS / Linux (Bash/Zsh)**:
+     ```bash
+     export OBSIDIAN_REST_API_KEY="<your_api_key>"
+     ```
+4. In `.agents/obsidian-config.json`, set `"provider": "local_rest_api"`.
 
 ---
 

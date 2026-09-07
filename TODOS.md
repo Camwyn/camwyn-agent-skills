@@ -12,6 +12,8 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## ✅ Completed
 
+- [x] **Multi-Provider Adapter (Local REST API & In-App MCP Connector)**
+  - Added support for both headless direct-filesystem MCP (`obsidian-mcp`) and in-app Obsidian community plugins ([Obsidian Local REST API](https://github.com/coddingtonbear/obsidian-local-rest-api) on port 27124 and `obsidian-mcp-plugin`). Implemented multi-provider detection in `/obsidian-setup`, unified provider adapter routing table across runtime skills (`obsidian-auto-sync`, `obsidian-project-init`), extended configuration schemas in `obsidian-config.json.example`, and documented dual setup options in `README.md`. *(2026-09-06)*
 - [x] **Visual Vault Dashboard & Canvas Generator**
   - Added automated generation of interactive Obsidian `.canvas` visual boards (`Dashboard.canvas`) in a connected 2x2 project grid and integrated rich Mermaid subsystem architecture maps in `Overview.md`. *(2026-09-06)*
 - [x] **Historical Worklog Archiving Policy (1,000-Line Rotation)**

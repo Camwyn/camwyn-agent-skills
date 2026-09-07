@@ -1,4 +1,21 @@
 {
+  "provider": "auto",
+  "providers": {
+    "headless_mcp": {
+      "type": "mcp_toolset",
+      "description": "Direct filesystem headless MCP server via npx obsidian-mcp"
+    },
+    "local_rest_api": {
+      "type": "https_rest",
+      "base_url": "https://127.0.0.1:27124",
+      "api_key_env": "OBSIDIAN_REST_API_KEY",
+      "insecure_ssl": true
+    },
+    "mcp_connector": {
+      "type": "in_app_mcp",
+      "description": "In-app Obsidian community plugin (obsidian-mcp-plugin) exposing MCP tools"
+    }
+  },
   "default_vault": "my_vault",
   "projects_dir": "Projects",
   "organization_nesting": "auto",
