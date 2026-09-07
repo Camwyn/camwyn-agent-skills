@@ -24,7 +24,7 @@ Before attempting any vault operations, verify that the `obsidian` MCP toolset i
 ```markdown
 > 🛑 **Obsidian MCP Server Not Detected or Unreachable**
 >
-> The Obsidian integration requires the `obsidian-mcp` server to communicate with your local Obsidian vault.
+> The Obsidian integration requires the [`obsidian-mcp`](https://github.com/StevenStavrakis/obsidian-mcp) server to communicate with your local Obsidian vault.
 >
 > ### Quick Setup Guide:
 >

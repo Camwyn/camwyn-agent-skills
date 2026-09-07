@@ -87,7 +87,7 @@ chmod +x install.sh
 
 ### 🔌 Prerequisites (Obsidian MCP Server)
 
-The Obsidian Suite communicates with your local Obsidian vault via Model Context Protocol (MCP) using `obsidian-mcp`.
+The Obsidian Suite communicates with your local Obsidian vault via Model Context Protocol (MCP) using [`obsidian-mcp`](https://github.com/StevenStavrakis/obsidian-mcp).
 
 Ensure your agent or IDE has the `obsidian` MCP server configured:
 
