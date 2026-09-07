@@ -62,11 +62,11 @@ To safely write to Obsidian without race conditions or overwriting desktop chang
      - `content`: updated content
      - `etag`: captured etag
 
-5. **Handle Conflicts**:
-   - If `obsidian_edit_note` returns `412 Precondition Failed` (meaning the note was modified concurrently in the Obsidian desktop app):
-     - Re-read note via `obsidian_read_note` to get the fresh content and new `etag`.
-     - Re-apply the ADR append.
-     - Retry `obsidian_edit_note`.
+5. **Handle Conflicts (Bounded Backoff & Queue Fallback)**:
+   - If `obsidian_edit_note` returns `412 Precondition Failed`:
+     - Attempt 2: Pause 500ms, re-read note via `obsidian_read_note`, get fresh content & etag, re-apply ADR, retry.
+     - Attempt 3: Pause 1500ms, re-read note and retry.
+     - If Attempt 3 fails: append ADR payload to `.agents/pending-sync.json` and inform user (will auto-flush on next sync or via `/obsidian-flush`).
 
 6. **Emit In-Chat Receipt**:
    - Display a clean summary of what was logged to Obsidian:

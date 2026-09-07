@@ -160,20 +160,61 @@ Triggered when an architectural choice, dependency selection, or styling decisio
 
 ---
 
-## 4. Concurrency & Conflict Protection
+## 4. Concurrency & Conflict Protection (Zero Data Loss)
 
-All updates MUST execute through this safe loop:
-1. `obsidian_read_note`: retrieve existing markdown content and current `etag`.
-2. Format the new block and append/update target section.
-3. `obsidian_edit_note`: supply `path`, updated `content`, and captured `etag`.
-4. **On 412 Precondition Failed**:
-   - Re-read note via `obsidian_read_note` to get fresh content.
-   - Re-apply entry to latest content.
-   - Retry `obsidian_edit_note`.
+All updates MUST execute through this bounded exponential backoff loop:
+
+1. **Attempt 1**:
+   - Call `obsidian_read_note`: retrieve markdown content and current `etag`.
+   - Format the update and call `obsidian_edit_note`.
+2. **Attempt 2 (on 412 Precondition Failed)**:
+   - Pause briefly (500ms).
+   - Re-read note via `obsidian_read_note` to get fresh content and new `etag`.
+   - Re-apply delta to latest content and retry `obsidian_edit_note`.
+3. **Attempt 3 (on 412 Precondition Failed)**:
+   - Pause with jitter (1500ms).
+   - Re-read note via `obsidian_read_note` and re-attempt `obsidian_edit_note`.
+4. **Final Failure Handling (Persist to Replay Queue)**:
+   - If Attempt 3 fails with 412 (note is being actively edited in Obsidian desktop):
+     - Append the uncommitted payload to `.agents/pending-sync.json` (or `~/.agents/pending-sync.json`):
+       ```json
+       {
+         "id": "sync-<timestamp>-<hash>",
+         "timestamp": "<ISO8601>",
+         "vault": "<VaultName>",
+         "target_path": "<target_note_path>",
+         "operation": "append",
+         "content": "<formatted_entry>"
+       }
+       ```
+     - Emit a warning receipt in chat:
+       > ⚠️ **Obsidian Concurrency**: Note `<target_note_path>` is currently being edited in Obsidian desktop.
+       > Queued update to `.agents/pending-sync.json`.
+       > - *Auto-flush*: Will automatically flush on the next sync event.
+       > - *Manual flush*: Run `/obsidian-flush` whenever you finish editing.
 
 ---
 
-## 5. Session Confirmation
+## 5. Queue Drain & Manual Flush (`/obsidian-flush`)
+
+Triggered automatically before any new sync event OR on-demand when the user runs `/obsidian-flush`:
+
+1. **Check Queue File**:
+   - Check if `.agents/pending-sync.json` exists and contains queued items.
+   - If empty or missing, notify: `All Obsidian sync items are up to date. Queue is empty.`
+2. **Drain Items**:
+   - For each queued item in chronological order:
+     - Attempt safe `obsidian_read_note` $\rightarrow$ `etag` $\rightarrow$ `obsidian_edit_note`.
+     - On success: remove item from queue.
+     - On 412 failure: leave in queue for subsequent flush.
+3. **Persist State**:
+   - Write remaining items back to `.agents/pending-sync.json` (or remove file if queue is empty).
+   - Emit receipt:
+     > 🔄 **Obsidian Queue Flushed**: Synced `<N>` pending update(s) to vault `<VaultName>`.
+
+---
+
+## 6. Session Confirmation
 
 Emit a compact, unobtrusive receipt in conversation:
 > 🔄 **Obsidian Live Sync**: Recorded commit `[<short_hash>]` to `Projects/<ProjectName>/Worklog.md`

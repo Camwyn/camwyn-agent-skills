@@ -56,4 +56,8 @@ Every entry in `Worklog.md` represents **strictly one milestone**:
 ## Operational Guardrails
 - **Silent Check**: If `.agents/obsidian-config.json` is absent or `auto_sync.enabled` is `false`, proceed normally with development without failing or interrupting the user.
 - **Dynamic Quick Links**: Ensure `Projects/<ProjectName>/Overview.md` contains links under `## Quick Links` to `Worklog.md`, `Tasks.md`, and `Decisions.md`.
-- **Concurrency Safety**: Always read note content and capture `etag` first, editing with `obsidian_edit_note` to avoid clobbering concurrent edits in the Obsidian desktop application.
+- **Concurrency Safety (Zero Data Loss)**:
+  - Always read note content and capture `etag` first, editing with `obsidian_edit_note`.
+  - On 412 conflicts, execute 3-attempt exponential backoff (500ms, 1500ms).
+  - If all 3 attempts fail due to active desktop edits, append the payload to `.agents/pending-sync.json`.
+  - The queue automatically drains on the next sync event, or on-demand when the user runs `/obsidian-flush`.

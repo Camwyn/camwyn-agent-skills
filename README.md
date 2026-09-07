@@ -56,7 +56,7 @@ Bi-directional sync, RAG grounding, and structured Architectural Decision Record
 | **[`obsidian-project-init`](skills/obsidian-rag/obsidian-project-init/SKILL.md)** | `/obsidian-init` | Scans vault for current repo, initializes `Projects/<Name>/Overview.md` + `Decisions.md`, or detects drift and prompts for non-destructive merges if present. |
 | **[`obsidian-rag-grounding`](skills/obsidian-rag/obsidian-rag-grounding/SKILL.md)** | `/obsidian-rag` | Ingests project overview, recent ADRs, and system guidelines with cascading project overrides to ground creative, UI, and coding tasks. |
 | **[`obsidian-decision-sync`](skills/obsidian-rag/obsidian-decision-sync/SKILL.md)** | `/obsidian-decision` | Formats choices into structured ADRs (*Chosen, Rationale, Rejected Alternatives*) and syncs via safe `etag` concurrency. |
-| **[`obsidian-auto-sync`](skills/obsidian-rag/obsidian-auto-sync/SKILL.md)** | Autonomous / Event-driven | Automatically records commits to `Worklog.md`, tickets to `Tasks.md`, and ADRs to `Decisions.md`, dynamically linking them in `Overview.md`. |
+| **[`obsidian-auto-sync`](skills/obsidian-rag/obsidian-auto-sync/SKILL.md)** | Autonomous / `/obsidian-flush` | Automatically records commits to `Worklog.md`, tickets to `Tasks.md`, and ADRs to `Decisions.md` with zero-data-loss replay queue and on-demand `/obsidian-flush`. |
 
 ---
 
