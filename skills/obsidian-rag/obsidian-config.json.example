@@ -13,7 +13,8 @@
     "filters": {
       "commit_level": "milestones_only",
       "rollup_window_hours": 2
-    }
+    },
+    "worklog_archive_limit_lines": 1000
   },
   "global_notes": {
     "tone_and_voice": "System/Tone and Voice.md",

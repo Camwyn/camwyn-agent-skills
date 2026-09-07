@@ -243,7 +243,8 @@ Ask the user if they would like the agent to autonomously keep Obsidian updated 
        "filters": {
          "commit_level": "milestones_only",
          "rollup_window_hours": 2
-       }
+       },
+       "worklog_archive_limit_lines": 1000
      }
      ```
 

@@ -53,10 +53,10 @@ Bi-directional sync, RAG grounding, and structured Architectural Decision Record
 | Skill | Trigger / Command | Description |
 |---|---|---|
 | **[`obsidian-setup`](skills/obsidian-rag/obsidian-setup/SKILL.md)** | `/obsidian-setup` | Interactive setup wizard. Discovers available vaults, sets default vault preferences, validates folder structure (`Projects/`, `System/`), and configures autonomous live-sync. |
-| **[`obsidian-project-init`](skills/obsidian-rag/obsidian-project-init/SKILL.md)** | `/obsidian-init` | Scans vault for current repo, initializes `Projects/<Name>/Overview.md` + `Decisions.md`, or detects drift and prompts for non-destructive merges if present. |
+| **[`obsidian-project-init`](skills/obsidian-rag/obsidian-project-init/SKILL.md)** | `/obsidian-init` | Scans vault for current repo, initializes `Projects/<Name>/Overview.md` (with Mermaid maps), `Dashboard.canvas` visual boards, and `Decisions.md`. Supports git worktrees, organization namespaces, and 4-vector drift reconciliation. |
 | **[`obsidian-rag-grounding`](skills/obsidian-rag/obsidian-rag-grounding/SKILL.md)** | `/obsidian-rag` | Ingests project overview, recent ADRs, and system guidelines with cascading project overrides to ground creative, UI, and coding tasks. |
-| **[`obsidian-decision-sync`](skills/obsidian-rag/obsidian-decision-sync/SKILL.md)** | `/obsidian-decision` | Formats choices into structured ADRs (*Chosen, Rationale, Rejected Alternatives*) and syncs via safe `etag` concurrency. |
-| **[`obsidian-auto-sync`](skills/obsidian-rag/obsidian-auto-sync/SKILL.md)** | Autonomous / `/obsidian-flush` | Automatically records commits to `Worklog.md`, tickets to `Tasks.md`, and ADRs to `Decisions.md` with zero-data-loss replay queue and on-demand `/obsidian-flush`. |
+| **[`obsidian-decision-sync`](skills/obsidian-rag/obsidian-decision-sync/SKILL.md)** | `/obsidian-decision` | Formats choices into structured ADRs (*Chosen, Rationale, Rejected Alternatives*) with automated superseding detection and bidirectional links. |
+| **[`obsidian-auto-sync`](skills/obsidian-rag/obsidian-auto-sync/SKILL.md)** | Autonomous / `/obsidian-flush` | Automatically records commits to `Worklog.md` (with 1,000-line milestone rotation), tickets to `Tasks.md`, and ADRs to `Decisions.md` with zero-data-loss replay queue. |
 
 ---
 

@@ -81,19 +81,32 @@ repo_path: "<relative_or_git_url>"
 - **Key Subsystems**:
   - `src/...`: <Brief role>
 
+### Subsystem Architecture Diagram
+```mermaid
+graph TD
+  Root["<ProjectName>"]
+  Sub1["<Subsystem 1>"]
+  Sub2["<Subsystem 2>"]
+  Root --> Sub1
+  Root --> Sub2
+```
+
 ## Voice, Tone & Design Principles
 - **Tone & Voice**: <Key tone rules for UI/copy (overrides global `System/Tone and Voice.md` if specified)>
 - **Design Tokens**: <Key styling/design system rules (overrides global `System/Design Tokens.md` if specified)>
 
 ## Quick Links
 - Repository: `<RepoPath>`
-- Decisions: [[Projects/<ProjectName>/Decisions|Decisions Log]]
+- Visual Board: [[<TargetProjectPath>/Dashboard.canvas|Visual Project Canvas]]
+- Decisions: [[<TargetProjectPath>/Decisions|Decisions Log]]
+- Worklog: [[<TargetProjectPath>/Worklog|Worklog]]
+- Tasks: [[<TargetProjectPath>/Tasks|Tasks & Backlog]]
 - Optional Project Overrides:
-  - [[Projects/<ProjectName>/Tone and Voice|Custom Voice & Tone]] *(if overriding global)*
-  - [[Projects/<ProjectName>/Design Tokens|Custom Design Tokens]] *(if overriding global)*
+  - [[<TargetProjectPath>/Tone and Voice|Custom Voice & Tone]] *(if overriding global)*
+  - [[<TargetProjectPath>/Design Tokens|Custom Design Tokens]] *(if overriding global)*
 ```
 
-3. **Initialize `Projects/<ProjectName>/Decisions.md`**:
+3. **Initialize `<TargetProjectPath>/Decisions.md`**:
    - Call `obsidian_create_note`:
 
 ```markdown
@@ -103,7 +116,7 @@ type: decision-log
 tags:
   - project/decisions
   - adr
-project: "[[Projects/<ProjectName>/Overview|<ProjectName>]]"
+project: "[[<TargetProjectPath>/Overview|<ProjectName>]]"
 ---
 
 # <ProjectName> — Architectural Decision Records (ADRs)
@@ -113,10 +126,32 @@ This log records significant architectural, voice, styling, and structural choic
 ---
 ```
 
-4. **Confirm to User**:
-   - Emit a clean summary of the newly created Obsidian notes and link them:
-     - `Projects/<ProjectName>/Overview.md`
-     - `Projects/<ProjectName>/Decisions.md`
+4. **Initialize Visual Dashboard Canvas (`<TargetProjectPath>/Dashboard.canvas`)**:
+   - Call `obsidian_create_note`:
+     - `vault`: `"<VaultName>"`
+     - `path`: `"<TargetProjectPath>/Dashboard.canvas"`
+     - `content`: JSON canvas structure connecting project nodes in a visual 2x2 grid:
+       ```json
+       {
+         "nodes": [
+           {"id": "node-overview", "type": "file", "file": "<TargetProjectPath>/Overview.md", "x": 0, "y": 0, "width": 450, "height": 340},
+           {"id": "node-decisions", "type": "file", "file": "<TargetProjectPath>/Decisions.md", "x": 500, "y": 0, "width": 450, "height": 340},
+           {"id": "node-worklog", "type": "file", "file": "<TargetProjectPath>/Worklog.md", "x": 0, "y": 380, "width": 450, "height": 340},
+           {"id": "node-tasks", "type": "file", "file": "<TargetProjectPath>/Tasks.md", "x": 500, "y": 380, "width": 450, "height": 340}
+         ],
+         "edges": [
+           {"id": "e-ov-dec", "fromNode": "node-overview", "toNode": "node-decisions", "fromSide": "right", "toSide": "left"},
+           {"id": "e-ov-work", "fromNode": "node-overview", "toNode": "node-worklog", "fromSide": "bottom", "toSide": "top"},
+           {"id": "e-ov-tasks", "fromNode": "node-overview", "toNode": "node-tasks", "fromSide": "bottom", "toSide": "top"}
+         ]
+       }
+       ```
+
+5. **Confirm to User**:
+   - Emit a clean summary of newly created Obsidian notes and canvas board:
+     - `<TargetProjectPath>/Overview.md` (with interactive Mermaid subsystem map)
+     - `<TargetProjectPath>/Decisions.md`
+     - `<TargetProjectPath>/Dashboard.canvas` (interactive visual workspace)
 
 ---
 
@@ -140,13 +175,14 @@ If a matching project note is found (e.g. `Projects/<ProjectName>/Overview.md` o
      - Compare against documented subsystems in `Overview.md`.
      - Detect: new architectural components (e.g., newly added `rules/`, `plugins/`, `api/`, `services/`, `packages/`).
 
-   - **Vector 3: Companion Notes & Quick Links**:
-     - Check if companion notes exist in `Projects/<ProjectName>/`:
+   - **Vector 3: Companion Notes & Visual Canvas Links**:
+     - Check if companion notes exist in `<TargetProjectPath>/`:
        - `Decisions.md` (ADR log)
        - `Worklog.md` (Engineering worklog)
        - `Tasks.md` (Tasks and backlog ledger)
+       - `Dashboard.canvas` (Interactive visual workspace)
      - Check `## Quick Links` in `Overview.md`.
-     - Detect: missing companion notes or missing wiki-links `[[Projects/<ProjectName>/...]]`.
+     - Detect: missing companion notes, missing `Dashboard.canvas`, or missing wiki-links `[[<TargetProjectPath>/...]]`.
 
    - **Vector 4: Repository & Git State**:
      - Compare current git branch, remote URL (`git remote get-url origin`), and workspace path against frontmatter `repo_path` and status.
@@ -161,7 +197,7 @@ If a matching project note is found (e.g. `Projects/<ProjectName>/Overview.md` o
    |---|---|---|---|
    | **Tech Stack** | `[<found_in_repo>]` | `[<found_in_note>]` | ⚠️ Outdated / New additions |
    | **Subsystems** | `[<found_subsystems>]` | `[<documented_subsystems>]` | ⚠️ Undocumented directories |
-   | **Quick Links**| `[<existing_companion_notes>]` | `[<linked_in_quick_links>]` | ⚠️ Missing wiki-links |
+   | **Visual & Links**| `[<existing_companion_notes>]` | `[<linked_in_quick_links>]` | ⚠️ Missing canvas or wiki-links |
    | **Git / Branch** | `<current_branch>` | `<documented_state>` | ℹ️ Metadata update |
    ```
 
@@ -170,8 +206,9 @@ If a matching project note is found (e.g. `Projects/<ProjectName>/Overview.md` o
 
    - **Option 1: Surgical Non-Destructive Reconciliation (Recommended)**:
      - Surgically update `tech_stack` in YAML frontmatter.
-     - Append or update new subsystems under `## Architecture & Tech Stack`.
-     - Populate missing wiki-links under `## Quick Links` to point to `Decisions.md`, `Worklog.md`, and `Tasks.md`.
+     - Update or append new subsystems under `## Architecture & Tech Stack` and refresh Mermaid diagram.
+     - Ensure `<TargetProjectPath>/Dashboard.canvas` exists (bootstrap if missing).
+     - Populate missing wiki-links under `## Quick Links` to point to `Dashboard.canvas`, `Decisions.md`, `Worklog.md`, and `Tasks.md`.
      - **Preserve all custom descriptions, manual notes, and user text byte-for-byte**.
      - Call `obsidian_edit_note` with `operation: "replace"` and `if_match: "<etag>"`.
    - **Option 2: Append Drift Audit Log**:

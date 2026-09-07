@@ -12,6 +12,10 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## ✅ Completed
 
+- [x] **Visual Vault Dashboard & Canvas Generator**
+  - Added automated generation of interactive Obsidian `.canvas` visual boards (`Dashboard.canvas`) in a connected 2x2 project grid and integrated rich Mermaid subsystem architecture maps in `Overview.md`. *(2026-09-06)*
+- [x] **Historical Worklog Archiving Policy (1,000-Line Rotation)**
+  - Implemented automatic yearly rotation of milestone blocks to `<Project>/Worklog-Archive-<YYYY>.md` when `Worklog.md` exceeds 1,000 lines, retaining recent active milestones with an archive index link. *(2026-09-06)*
 - [x] **Multi-Repo & Git Worktree Mapping**
   - Expanded `obsidian-project-init`, `obsidian-auto-sync`, and `rules/obsidian-live-sync.md` to detect git worktrees and organization namespaces, routing commits to worktree-specific notes while preserving parent project architecture and decision links. Added `organization_nesting` and `worktree_support` to configuration schemas. *(2026-09-06)*
 - [x] **Automated ADR Lifecycle**

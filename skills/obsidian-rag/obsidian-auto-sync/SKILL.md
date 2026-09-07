@@ -110,6 +110,19 @@ Triggered when the agent executes a git commit:
      - Emit a brief, helpful prompt:
        > 💡 **Obsidian Drift Note**: Dependencies or repository structure changed. Run `/obsidian-init` to reconcile `Projects/<ProjectName>/Overview.md`.
 
+7. **Worklog Rotation & Archiving Policy (1,000-Line Threshold)**:
+   - When reading `<TargetProjectPath>/Worklog.md`, check total line count.
+   - If lines exceed `auto_sync.worklog_archive_limit_lines` (default: `1000` lines):
+     - Resolve current year `<YYYY>` (e.g. `2026`).
+     - Target archive note: `<TargetProjectPath>/Worklog-Archive-<YYYY>.md`.
+     - If archive note does not exist, initialize with frontmatter (`type: worklog-archive`) and link back to `Overview.md`.
+     - Move older milestone blocks to the archive note, keeping the frontmatter, title, and the **latest 5–10 active milestone blocks** in `Worklog.md`.
+     - In `Worklog.md`, ensure the archive index link exists beneath the header:
+       > 📚 **Archived Milestones**: [[<TargetProjectPath>/Worklog-Archive-<YYYY>|<YYYY> Archive]]
+     - Write archive note and update active `Worklog.md` with `if_match` revision guard.
+     - Emit receipt:
+       > 📦 **Obsidian Worklog Rotated**: Archived older entries to `<TargetProjectPath>/Worklog-Archive-<YYYY>.md`.
+
 ### B. Task / Ticket Sync (`Tasks.md`)
 Triggered when a task, ticket, or major TODO is created, updated, or marked completed in session:
 
