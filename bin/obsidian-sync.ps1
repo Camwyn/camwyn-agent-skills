@@ -150,13 +150,14 @@ switch ($Command.ToLower()) {
                 $commitSubj = $item.commit.subject
                 $commitDate = if ($item.commit.date) { ([DateTime]$item.commit.date).ToString('yyyy-MM-dd HH:mm') } else { (Get-Date -Format 'yyyy-MM-dd HH:mm') }
                 $keyFiles = ($item.commit.files | Select-Object -First 5) -join ', '
+                $formattedHash = [string]::Format("`{0}`", $commitHash)
 
                 $block = @"
 
 ### [$commitDate] $commitSubj
-- **Milestone**: $commitSubj (Replayed via CLI)
+- **Milestone**: 🏁 $commitSubj
 - **Commits (1)**:
-  - `$commitHash` - $commitSubj
+  - $formattedHash - $commitSubj
 - **Key Files**: $keyFiles
 "@
                 [System.IO.File]::AppendAllText($fullTarget, $block, [System.Text.Encoding]::UTF8)
