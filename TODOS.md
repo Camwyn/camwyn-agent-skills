@@ -12,6 +12,8 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## ✅ Completed
 
+- [x] **Vault Health & Link Integrity Auditor (`obsidian-vault-audit` / `/audit-vault`)**
+  - Created multi-vector diagnostic auditor scanning broken wikilinks and markdown links, orphan notes, stub notes, frontmatter schemas, and project companion completeness (`Overview`, `Tasks`, `Worklog`, `Decisions`) with automatic companion note scaffolding (`-ScaffoldMissing`). Added native PowerShell engine (`scripts/audit-vault.ps1`), cross-platform shell wrapper (`scripts/audit-vault.sh`), and full suite integration. *(2026-09-07)*
 - [x] **Dataview Plugin Schema & Dynamic Query Blocks**
   - Standardized YAML frontmatter schemas across all suite notes (`pillar`, `status`, `tech_stack`, `created_at`, `updated_at`, `tags`) and embedded dynamic Dataview query blocks (DQL) into `Overview.md` (project task aggregation) and `PARA-Index.md` (active projects directory, directives directory, and vault-wide task rollups) with graceful degradation to static markdown tables. Extended configuration schemas in `obsidian-config.json.example` and live config with `"dataview": { "enabled": true, "render_dynamic_queries": true }`. *(2026-09-07)*
 - [x] **Native Git Post-Commit Hook Integration**
