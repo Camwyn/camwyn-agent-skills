@@ -110,31 +110,69 @@ This log records significant architectural, voice, styling, and structural choic
 
 ---
 
-## 3. Branch B: Project Note Already Exists (Drift Detection)
+## 3. Branch B: Project Note Already Exists (Automated Drift Detection & Reconciliation)
 
 If a matching project note is found (e.g. `Projects/<ProjectName>/Overview.md` or single-file `Projects/<ProjectName>.md`):
 
 1. **Read Existing Note**:
-   - Call `obsidian_read_note` on the matched note to inspect frontmatter, tech stack, and overview.
+   - Call `obsidian_read_note` on the matched note to inspect frontmatter, current content, and capture `etag`.
 
-2. **Compare with Current Codebase (Drift Check)**:
-   - Check if new dependencies or frameworks were added (e.g., added Tailwind, Prisma, FastAPI).
-   - Check if git remote or repository path has changed.
-   - Check if status is outdated (e.g., marked `planning` but actively built).
+2. **Multi-Vector Drift Analysis**:
+   Perform automated drift inspection across 4 vectors:
 
-3. **Prompt User with Delta Options (Non-Destructive)**:
-   - If drift is detected:
-     > **Project Note Found**: `Projects/<ProjectName>/Overview.md`
-     > **Detected Drift**:
-     > - Tech stack in repo: `[<new_tech>]` (missing in Obsidian)
-     > - Branch/remote: `<current_branch>`
-     > 
-     > Would you like to:
-     > 1. **Merge updates** — Update frontmatter and tech stack while preserving all custom notes.
-     > 2. **Append update log** — Add a dated status entry under `## Sync Updates`.
-     > 3. **Keep as-is** — Load existing note into session context without modifying Obsidian.
-   - If user chooses to merge:
-     - Use `obsidian_edit_note` with the `etag` from `obsidian_read_note` to safely update only the relevant frontmatter / sections without clobbering custom user writing.
+   - **Vector 1: Tech Stack & Dependencies**:
+     - Inspect project manifests (`package.json`, `pyproject.toml`, `Cargo.toml`, `composer.json`, `go.mod`, script files).
+     - Compare detected technologies against `tech_stack` frontmatter and `## Architecture & Tech Stack`.
+     - Detect: newly added dependencies, removed packages, or framework upgrades.
+
+   - **Vector 2: Subsystems & Architectural Directories**:
+     - Scan top-level workspace directories (filtering out vendor/build directories like `node_modules`, `.git`, `vendor`, `dist`, `.gemini`).
+     - Compare against documented subsystems in `Overview.md`.
+     - Detect: new architectural components (e.g., newly added `rules/`, `plugins/`, `api/`, `services/`, `packages/`).
+
+   - **Vector 3: Companion Notes & Quick Links**:
+     - Check if companion notes exist in `Projects/<ProjectName>/`:
+       - `Decisions.md` (ADR log)
+       - `Worklog.md` (Engineering worklog)
+       - `Tasks.md` (Tasks and backlog ledger)
+     - Check `## Quick Links` in `Overview.md`.
+     - Detect: missing companion notes or missing wiki-links `[[Projects/<ProjectName>/...]]`.
+
+   - **Vector 4: Repository & Git State**:
+     - Compare current git branch, remote URL (`git remote get-url origin`), and workspace path against frontmatter `repo_path` and status.
+
+3. **Present Drift Audit Matrix**:
+   If ANY drift is detected, present a structured audit table to the user:
+
+   ```markdown
+   ### 🔍 Obsidian Project Drift Detected: [<ProjectName>]
+
+   | Vector | Workspace Reality | Obsidian Note (`Overview.md`) | Status |
+   |---|---|---|---|
+   | **Tech Stack** | `[<found_in_repo>]` | `[<found_in_note>]` | ⚠️ Outdated / New additions |
+   | **Subsystems** | `[<found_subsystems>]` | `[<documented_subsystems>]` | ⚠️ Undocumented directories |
+   | **Quick Links**| `[<existing_companion_notes>]` | `[<linked_in_quick_links>]` | ⚠️ Missing wiki-links |
+   | **Git / Branch** | `<current_branch>` | `<documented_state>` | ℹ️ Metadata update |
+   ```
+
+4. **Reconciliation Options (User Selection)**:
+   Offer 3 non-destructive options:
+
+   - **Option 1: Surgical Non-Destructive Reconciliation (Recommended)**:
+     - Surgically update `tech_stack` in YAML frontmatter.
+     - Append or update new subsystems under `## Architecture & Tech Stack`.
+     - Populate missing wiki-links under `## Quick Links` to point to `Decisions.md`, `Worklog.md`, and `Tasks.md`.
+     - **Preserve all custom descriptions, manual notes, and user text byte-for-byte**.
+     - Call `obsidian_edit_note` with `operation: "replace"` and `if_match: "<etag>"`.
+   - **Option 2: Append Drift Audit Log**:
+     - Preserve existing overview note exactly as-is.
+     - Append a dated audit entry under `## Drift & Sync Audit` documenting the findings.
+   - **Option 3: Keep As-Is**:
+     - Leave Obsidian untouched; load existing note into active context.
+
+5. **Reconciliation Receipt**:
+   Emit a clean receipt upon completion:
+   > 🔄 **Obsidian Project Reconciled**: Updated `Overview.md` for `<ProjectName>` (Tech stack + subsystems + quick links synchronized).
 
 ---
 
@@ -143,4 +181,4 @@ If a matching project note is found (e.g. `Projects/<ProjectName>/Overview.md` o
 - **MCP Server Missing / Unreachable**: If `obsidian` MCP tools (`obsidian_search_vault`, `obsidian_create_note`, etc.) are not available, halt and advise the user to run `/obsidian-setup` or configure the `obsidian-mcp` server in their agent MCP settings.
 - **Vault Not Connected / Missing**: If the configured vault is unreachable, call `obsidian_list_vaults` and prompt the user to pick an active vault.
 - **Etag Conflict on Edit**: If `obsidian_edit_note` returns a 412/etag mismatch, execute bounded 3-attempt backoff (500ms, 1500ms). If all attempts fail, queue payload to `.agents/pending-sync.json` for later flush.
-- **Never Overwrite Blindly**: Never replace entire note content without preserving existing non-metadata text written by the user.
+- **Never Overwrite Blindly**: Never replace entire note content without preserving existing non-metadata text written by the user. Always use `if_match` revision guards.

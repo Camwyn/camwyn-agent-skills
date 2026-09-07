@@ -51,6 +51,11 @@ Every entry in `Worklog.md` represents **strictly one milestone**:
 - **Record as ADR**: Choosing a tech stack, adopting a design system token structure, picking an MCP interface, rejecting an alternative approach, or establishing a security protocol.
 - **Skip ADR**: Routine helper function implementations, bug fixes following established patterns, or local variable renames.
 
+### 4. Drift Awareness & Notification
+- When a commit modifies package manifests (`package.json`, `Cargo.toml`, etc.) or introduces new top-level directories:
+  - Note the dependency / architecture shift in `Worklog.md`.
+  - Prompt the user with a 1-line note suggesting `/obsidian-init` to reconcile `Projects/<ProjectName>/Overview.md`.
+
 ---
 
 ## Operational Guardrails

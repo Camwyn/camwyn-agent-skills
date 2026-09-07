@@ -95,6 +95,12 @@ Triggered when the agent executes a git commit:
    - **Key Files**: `<file1>`, `<file2>`
    ```
 
+6. **Dependency & Subsystem Drift Awareness**:
+   - If the commit modified dependencies (`package.json`, `pyproject.toml`, `Cargo.toml`, `composer.json`, etc.) or introduced new architectural directories:
+     - Note the dependency / subsystem change in the worklog entry.
+     - Emit a brief, helpful prompt:
+       > 💡 **Obsidian Drift Note**: Dependencies or repository structure changed. Run `/obsidian-init` to reconcile `Projects/<ProjectName>/Overview.md`.
+
 ### B. Task / Ticket Sync (`Tasks.md`)
 Triggered when a task, ticket, or major TODO is created, updated, or marked completed in session:
 

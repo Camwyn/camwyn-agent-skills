@@ -6,14 +6,14 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## 🛠️ High Priority / Risk Mitigations
 
-- [ ] **Automated Drift Detection & Reconciliation**
-  - *Context*: Prevent codebase reality and vault overview from diverging over time.
-  - *Mitigation*: Expand `/obsidian-init` drift checks for newly added dependencies, tech stack changes, and branch updates.
+*(All high-priority Council risk mitigation items completed)*
 
 ---
 
 ## ✅ Completed
 
+- [x] **Automated Drift Detection & Reconciliation**
+  - Expanded `obsidian-project-init` with multi-vector drift detection (dependencies, architectural subsystems, companion note links, and git state) and 3-mode non-destructive reconciliation (`operation: "replace"` with `if_match` revision guard). Added live drift awareness to `obsidian-auto-sync` and `rules/obsidian-live-sync.md`. *(2026-09-06)*
 - [x] **Actionable Missing-MCP Detection & Guidance**
   - Implemented Section 0 MCP health check in `/obsidian-setup` with copy-pasteable configs for Antigravity, Claude Code, and Cursor across Windows/macOS/Linux, non-blocking queue fallback across all runtime skills, and comprehensive docs in `README.md`. *(2026-09-06)*
 - [x] **Concurrency Conflict Backoff & Zero-Data-Loss Replay Queue**
