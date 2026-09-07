@@ -50,8 +50,26 @@ Whenever writing to `Worklog.md`, `Tasks.md`, or `Decisions.md`:
 ### A. Commit Sync (`Worklog.md`)
 Triggered when the agent executes a git commit:
 
-1. **Target Note**: `Projects/<ProjectName>/Worklog.md`
-2. **Initial Scaffolding** (if note does not exist):
+1. **Significance Evaluation**:
+   - Check `auto_sync.filters.commit_level` in `.agents/obsidian-config.json` (defaults to `"milestones_only"`).
+   - If `"milestones_only"`:
+     - Allow: `feat:`, `refactor:`, breaking changes, major skill/rule additions, or architectural migrations.
+     - Silently skip: `style:`, `lint:`, minor typos (`docs(typo):`), temp debug logs, or minor test bumps.
+
+2. **The "1 Milestone per Rollup" Algorithm**:
+   Every entry in `Worklog.md` represents **strictly one milestone**:
+   - Call `obsidian_read_note` on `Projects/<ProjectName>/Worklog.md`.
+   - Inspect the latest `### [YYYY-MM-DD HH:MM]` block.
+   - **Start New Milestone Block** if:
+     - The incoming commit is a milestone commit (`feat:`, major refactor, completed ticket).
+     - OR the latest block is already capped with a milestone.
+     - OR $>2$ hours have elapsed (`rollup_window_hours`) or functional scope changed.
+   - **Rollup Supporting Commit** if:
+     - The incoming commit is an incremental supporting commit (`chore:`, `test:`, minor `refactor:`) building toward an active milestone.
+     - Append to the active block's `- **Commits**:` bullet list.
+
+3. **Target Note**: `Projects/<ProjectName>/Worklog.md`
+4. **Initial Scaffolding** (if note does not exist):
    ```markdown
    ---
    title: "<ProjectName> - Worklog"
@@ -68,12 +86,12 @@ Triggered when the agent executes a git commit:
 
    ---
    ```
-3. **Append Entry**:
+5. **Milestone Rollup Entry Format**:
    ```markdown
-   ### [YYYY-MM-DD HH:MM] <Commit Subject>
-   - **Commit**: `<short_hash>`
-   - **Type**: `<feat|fix|refactor|docs|chore|test>`
-   - **Summary**: <1-2 sentences on what was accomplished and why>
+   ### [YYYY-MM-DD HH:MM] <Milestone Title>
+   - **Milestone**: 🏁 <1-sentence summary of the milestone achieved>
+   - **Commits (<N>)**:
+     - `<short_hash>` - <commit subject>
    - **Key Files**: `<file1>`, `<file2>`
    ```
 

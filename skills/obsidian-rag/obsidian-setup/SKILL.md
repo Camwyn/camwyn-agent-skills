@@ -133,11 +133,14 @@ Core architectural standards across repositories and projects.
 
 Ask the user if they would like the agent to autonomously keep Obsidian updated as work happens:
 
-1. **Prompt for Live Sync**:
+1. **Prompt for Live Sync & Filter Thresholds**:
    - Ask if they want autonomous synchronization enabled:
-     - Commits logged to `Projects/<ProjectName>/Worklog.md`
+     - Commits logged to `Projects/<ProjectName>/Worklog.md` (with "1 Milestone per Rollup" lifecycle)
      - Tasks/TODOs logged to `Projects/<ProjectName>/Tasks.md`
      - Architectural decisions logged to `Projects/<ProjectName>/Decisions.md`
+   - Ask for their preferred commit verbosity:
+     - **Milestones Only (Recommended)**: Filters out minor formatting, lints, and typos; rolls up supporting work into 1 milestone per block.
+     - **All Commits**: Records every commit unconditionally.
 2. **Persist Toggles**:
    - Update `auto_sync` in `.agents/obsidian-config.json`:
      ```json
@@ -145,7 +148,11 @@ Ask the user if they would like the agent to autonomously keep Obsidian updated 
        "enabled": true,
        "on_commit": true,
        "on_decision": true,
-       "on_todo": true
+       "on_todo": true,
+       "filters": {
+         "commit_level": "milestones_only",
+         "rollup_window_hours": 2
+       }
      }
      ```
 

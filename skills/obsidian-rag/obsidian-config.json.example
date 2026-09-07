@@ -7,7 +7,11 @@
     "enabled": true,
     "on_commit": true,
     "on_decision": true,
-    "on_todo": true
+    "on_todo": true,
+    "filters": {
+      "commit_level": "milestones_only",
+      "rollup_window_hours": 2
+    }
   },
   "global_notes": {
     "tone_and_voice": "System/Tone and Voice.md",
