@@ -281,3 +281,22 @@ Triggered automatically before any new sync event OR on-demand when the user run
 
 Emit a compact, unobtrusive receipt in conversation:
 > 🔄 **Obsidian Live Sync**: Recorded commit `[<short_hash>]` to `Projects/<ProjectName>/Worklog.md`
+
+---
+
+## 7. Standalone Git Post-Commit Hook Integration
+
+To guarantee 100% milestone capture even when commits are made outside an active AI agent session (via CLI `git commit`, IDE source control panels, or GUI git clients):
+
+1. **Portable Hook Architecture**:
+   - The repository provides a universal `.git/hooks/post-commit` script located at `scripts/post-commit`.
+   - On Windows, it executes `scripts/obsidian-post-commit.ps1`.
+   - On macOS / Linux, it executes `scripts/obsidian-post-commit.sh`.
+2. **Execution Flow**:
+   - Gathers commit hash, subject, author, date, and changed files.
+   - Evaluates against the configured `commit_level` (default: `milestones_only`).
+   - Appends significant milestones directly into `.agents/pending-sync.json`.
+   - Emits a non-blocking terminal notice: `[obsidian-sync] Queued milestone [<hash>] to .agents/pending-sync.json`.
+3. **Automatic Reconciliation**:
+   - The queued commits automatically flush and roll up into `Projects/<ProjectName>/Worklog.md` on the next agent interaction or on-demand via `/obsidian-flush`.
+

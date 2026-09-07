@@ -67,6 +67,14 @@ if (Test-Path "$PSScriptRoot\rules") {
     }
 }
 
+# Install git post-commit hook if in a git repository
+$gitHooksDir = Join-Path $PSScriptRoot ".git\hooks"
+if ((Test-Path $gitHooksDir) -and (Test-Path "$PSScriptRoot\scripts\post-commit")) {
+    $hookDest = Join-Path $gitHooksDir "post-commit"
+    Copy-Item -Path "$PSScriptRoot\scripts\post-commit" -Destination $hookDest -Force
+    Write-Host "  [HOOK]   post-commit -> $hookDest" -ForegroundColor Green
+}
+
 # Install obsidian-config.json if not present
 $configTarget = "$HOME\.agents\obsidian-config.json"
 $configExample = "$PSScriptRoot\skills\obsidian-rag\obsidian-config.json.example"

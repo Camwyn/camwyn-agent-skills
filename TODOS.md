@@ -12,6 +12,8 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## ✅ Completed
 
+- [x] **Native Git Post-Commit Hook Integration**
+  - Added standalone `.git/hooks/post-commit` script with cross-platform runners (`scripts/obsidian-post-commit.ps1` and `scripts/obsidian-post-commit.sh`) to queue milestone commits created outside AI agent turns directly into `.agents/pending-sync.json`. Integrated automatic hook installation into `install.ps1` and `install.sh`, documented in `obsidian-auto-sync/SKILL.md` and `README.md`. *(2026-09-07)*
 - [x] **Global PARA Map of Content (MOC) & Master Canvas Generator (`obsidian-index`)**
   - Created dedicated `obsidian-index` skill (`/obsidian-index`) compiling an authoritative master Map of Content (`PARA-Index.md`) and interactive 4-quadrant visual spatial board (`PARA-Index.canvas`) connecting all active `Projects/`, `Areas/` directives, `Resources/` reference playbooks, and `Archives/` across the vault. Scaffolding live master index and canvas in the active vault. *(2026-09-06)*
 - [x] **PARA & BASB (CODE) Default Vault Architecture**

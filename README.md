@@ -103,6 +103,17 @@ chmod +x install.sh
 ./install.sh
 ```
 
+*(The installer also automatically links `.git/hooks/post-commit` into your local git repository to queue commits created via manual CLI or external IDEs).*
+
+---
+
+### 🪝 Standalone Git Post-Commit Hook
+
+If you make commits directly in terminal, VS Code Source Control panel, or GitKraken outside an active AI agent session, the included post-commit hook ensures no milestones are missed:
+1. When you run `git commit`, `.git/hooks/post-commit` runs `scripts/obsidian-post-commit.ps1` (or `scripts/obsidian-post-commit.sh`).
+2. If the commit meets the **Threshold of Significance** (`milestones_only`), it queues the metadata into `.agents/pending-sync.json`.
+3. When your AI agent opens next (or on `/obsidian-flush`), all queued commits are rolled up into `Projects/<ProjectName>/Worklog.md`.
+
 ---
 
 ### 🔌 Prerequisites & Provider Setup

@@ -9,3 +9,4 @@ Thumbs.db
 *.log
 .scratch/
 *.code-workspace
+.agents/

@@ -34,6 +34,13 @@ if [ -d "$SCRIPT_DIR/rules" ]; then
   done
 fi
 
+# Install git post-commit hook if in a git repository
+if [ -d "$SCRIPT_DIR/.git/hooks" ] && [ -f "$SCRIPT_DIR/scripts/post-commit" ]; then
+  cp "$SCRIPT_DIR/scripts/post-commit" "$SCRIPT_DIR/.git/hooks/post-commit"
+  chmod +x "$SCRIPT_DIR/.git/hooks/post-commit" "$SCRIPT_DIR/scripts/obsidian-post-commit.sh" 2>/dev/null || true
+  echo "  [HOOK] Installed post-commit hook to $SCRIPT_DIR/.git/hooks/post-commit"
+fi
+
 CONFIG_TARGET="$HOME/.agents/obsidian-config.json"
 CONFIG_EXAMPLE="$SCRIPT_DIR/skills/obsidian-rag/obsidian-config.json.example"
 if [ ! -f "$CONFIG_TARGET" ] && [ -f "$CONFIG_EXAMPLE" ]; then
