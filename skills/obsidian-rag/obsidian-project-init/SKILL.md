@@ -93,8 +93,8 @@ graph TD
 ```
 
 ## Voice, Tone & Design Principles
-- **Tone & Voice**: <Key tone rules for UI/copy (overrides global `System/Tone and Voice.md` if specified)>
-- **Design Tokens**: <Key styling/design system rules (overrides global `System/Design Tokens.md` if specified)>
+- **Tone & Voice**: <Key tone rules for UI/copy (overrides global `Areas/Tone and Voice.md` if specified)>
+- **Design Tokens**: <Key styling/design system rules (overrides global `Areas/Design Tokens.md` if specified)>
 
 ## Quick Links
 - Repository: `<RepoPath>`

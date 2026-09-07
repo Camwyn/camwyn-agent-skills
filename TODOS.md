@@ -12,6 +12,8 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## ✅ Completed
 
+- [x] **PARA & BASB (CODE) Default Vault Architecture**
+  - Established Tiago Forte's PARA method (*Projects, Areas, Resources, Archives*) and CODE operating cycle (*Capture, Organize, Distill, Express*) as the default organization across the suite. Updated `obsidian-config.json.example`, `obsidian-setup`, `obsidian-rag-grounding`, `obsidian-project-init`, and `rules/obsidian-live-sync.md`. Scaffolding `Areas/`, `Resources/`, and `Archives/` with foundational directive templates while providing legacy fallbacks for existing vaults. *(2026-09-06)*
 - [x] **Multi-Provider Adapter (Local REST API & In-App MCP Connector)**
   - Added support for both headless direct-filesystem MCP (`obsidian-mcp`) and in-app Obsidian community plugins ([Obsidian Local REST API](https://github.com/coddingtonbear/obsidian-local-rest-api) on port 27124 and `obsidian-mcp-plugin`). Implemented multi-provider detection in `/obsidian-setup`, unified provider adapter routing table across runtime skills (`obsidian-auto-sync`, `obsidian-project-init`), extended configuration schemas in `obsidian-config.json.example`, and documented dual setup options in `README.md`. *(2026-09-06)*
 - [x] **Visual Vault Dashboard & Canvas Generator**

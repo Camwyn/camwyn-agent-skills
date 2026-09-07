@@ -22,32 +22,38 @@ Run this skill:
 
 ---
 
-## 2. Cascading Retrieval Engine (Project Override > Global Default)
+## 2. Cascading Retrieval Engine (Project Override > Areas Default > Resources)
 
-When resolving directives (Voice & Tone, Design Tokens, Architecture Standards), evaluate using a cascading priority:
+When resolving directives (Voice & Tone, Design Tokens, Architecture Standards), evaluate using a cascading priority based on **PARA**:
 
 ```
 [ Step 1: Check Project-Specific Note / Section ] ──(Found?)──> Use Project Override
                       │ (Not Found)
                       ▼
-[ Step 2: Fall back to Global `System/` Note ]    ─────────────> Use Global Default
+[ Step 2: Fall back to `Areas/` Standards Note ]  ──(Found?)──> Use Area Standard
+                      │ (Not Found)
+                      ▼
+[ Step 3: Check Legacy `System/` Note ]          ─────────────> Use Legacy Default
 ```
 
 ### Directives Resolution Matrix:
 
 1. **Voice & Tone Resolution**:
    - *Priority 1 (Project Override)*: Look for `Projects/<ProjectName>/Tone and Voice.md` or section `## Voice, Tone & Design Principles` in `Projects/<ProjectName>/Overview.md`.
-   - *Priority 2 (Global Default)*: Look for `System/Tone and Voice.md`.
+   - *Priority 2 (Area Standard)*: Look for `Areas/Tone and Voice.md` (fallback: `System/Tone and Voice.md`).
 
 2. **Design System & Styling Tokens Resolution**:
    - *Priority 1 (Project Override)*: Look for `Projects/<ProjectName>/Design Tokens.md` or section `## Design Tokens` in `Projects/<ProjectName>/Overview.md`.
-   - *Priority 2 (Global Default)*: Look for `System/Design Tokens.md`.
+   - *Priority 2 (Area Standard)*: Look for `Areas/Design Tokens.md` (fallback: `System/Design Tokens.md`).
 
 3. **Architecture & Engineering Principles Resolution**:
    - *Priority 1 (Project Override)*: Look for `Projects/<ProjectName>/Architecture.md` or section `## Architecture & Tech Stack` in `Projects/<ProjectName>/Overview.md`.
-   - *Priority 2 (Global Default)*: Look for `System/Architecture Principles.md`.
+   - *Priority 2 (Area Standard)*: Look for `Areas/Architecture Principles.md` (fallback: `System/Architecture Principles.md`).
 
-4. **Recent Decisions (Top 3–5 ADRs)**:
+4. **Technical Resources & Cheat-Sheets (`Resources/`)**:
+   - Check `Resources/` for cheat-sheets, SDK specs, or prompt guides matching the active stack (e.g. `Resources/MCP-Protocols/`, `Resources/Python-Conventions.md`).
+
+5. **Recent Decisions (Top 3–5 ADRs)**:
    - Read `Projects/<ProjectName>/Decisions.md` and parse the **latest 3 to 5 ADR entries** for active constraints and rejected alternatives.
 
 ---
@@ -58,14 +64,16 @@ Synthesize the resolved directives and output a clear, structured **Grounding Br
 
 ```markdown
 ## 🧠 Obsidian Grounding: [<ProjectName>]
-- **Voice & Tone**: <Rules summary> `[Project Override | Global Default]`
-- **Design & Styling Tokens**: <Theme/tokens summary> `[Project Override | Global Default]`
+- **Voice & Tone**: <Rules summary> `[Project Override | Area Standard]`
+- **Design & Styling Tokens**: <Theme/tokens summary> `[Project Override | Area Standard]`
 - **Active Architectural Decisions**:
   - `ADR-YYYYMMDD`: <Summary of accepted decision and key constraint>
   - `ADR-YYYYMMDD`: <Summary of rejected alternative to avoid re-evaluating>
+- **Referenced Resources**: <List of relevant notes from Resources/ if applicable>
 - **Resolved Sources**:
-  - Voice: `Projects/<ProjectName>/Tone and Voice.md` (or `System/Tone and Voice.md`)
-  - Design: `Projects/<ProjectName>/Design Tokens.md` (or `System/Design Tokens.md`)
+  - Voice: `Projects/<ProjectName>/Tone and Voice.md` (or `Areas/Tone and Voice.md`)
+  - Design: `Projects/<ProjectName>/Design Tokens.md` (or `Areas/Design Tokens.md`)
+  - Architecture: `Projects/<ProjectName>/Architecture.md` (or `Areas/Architecture Principles.md`)
   - Project Overview: `Projects/<ProjectName>/Overview.md`
   - Decisions Log: `Projects/<ProjectName>/Decisions.md`
 ```

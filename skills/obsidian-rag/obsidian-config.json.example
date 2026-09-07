@@ -16,11 +16,16 @@
       "description": "In-app Obsidian community plugin (obsidian-mcp-plugin) exposing MCP tools"
     }
   },
+  "layout": "para",
+  "para": {
+    "projects_dir": "Projects",
+    "areas_dir": "Areas",
+    "resources_dir": "Resources",
+    "archives_dir": "Archives"
+  },
   "default_vault": "my_vault",
-  "projects_dir": "Projects",
   "organization_nesting": "auto",
   "worktree_support": true,
-  "system_dir": "System",
   "adrs_per_context_limit": 5,
   "auto_sync": {
     "enabled": true,
@@ -34,8 +39,11 @@
     "worklog_archive_limit_lines": 1000
   },
   "global_notes": {
-    "tone_and_voice": "System/Tone and Voice.md",
-    "design_tokens": "System/Design Tokens.md",
-    "architecture": "System/Architecture Principles.md"
+    "tone_and_voice": "Areas/Tone and Voice.md",
+    "design_tokens": "Areas/Design Tokens.md",
+    "architecture": "Areas/Architecture Principles.md"
+  },
+  "legacy_fallbacks": {
+    "system_dir": "System"
   }
 }

@@ -52,11 +52,28 @@ Bi-directional sync, RAG grounding, and structured Architectural Decision Record
 
 | Skill | Trigger / Command | Description |
 |---|---|---|
-| **[`obsidian-setup`](skills/obsidian-rag/obsidian-setup/SKILL.md)** | `/obsidian-setup` | Interactive setup wizard. Discovers available vaults, sets default vault preferences, validates folder structure (`Projects/`, `System/`), and configures autonomous live-sync. |
+| **[`obsidian-setup`](skills/obsidian-rag/obsidian-setup/SKILL.md)** | `/obsidian-setup` | Interactive setup wizard. Discovers vaults, sets default vault preferences, validates the **PARA** folder structure (`Projects/`, `Areas/`, `Resources/`, `Archives/`), and configures live-sync. |
 | **[`obsidian-project-init`](skills/obsidian-rag/obsidian-project-init/SKILL.md)** | `/obsidian-init` | Scans vault for current repo, initializes `Projects/<Name>/Overview.md` (with Mermaid maps), `Dashboard.canvas` visual boards, and `Decisions.md`. Supports git worktrees, organization namespaces, and 4-vector drift reconciliation. |
-| **[`obsidian-rag-grounding`](skills/obsidian-rag/obsidian-rag-grounding/SKILL.md)** | `/obsidian-rag` | Ingests project overview, recent ADRs, and system guidelines with cascading project overrides to ground creative, UI, and coding tasks. |
+| **[`obsidian-rag-grounding`](skills/obsidian-rag/obsidian-rag-grounding/SKILL.md)** | `/obsidian-rag` | Ingests project overview, recent ADRs, `Areas/` system guidelines, and `Resources/` references with cascading project overrides to ground creative, UI, and coding tasks. |
 | **[`obsidian-decision-sync`](skills/obsidian-rag/obsidian-decision-sync/SKILL.md)** | `/obsidian-decision` | Formats choices into structured ADRs (*Chosen, Rationale, Rejected Alternatives*) with automated superseding detection and bidirectional links. |
 | **[`obsidian-auto-sync`](skills/obsidian-rag/obsidian-auto-sync/SKILL.md)** | Autonomous / `/obsidian-flush` | Automatically records commits to `Worklog.md` (with 1,000-line milestone rotation), tickets to `Tasks.md`, and ADRs to `Decisions.md` with zero-data-loss replay queue. |
+
+---
+
+### 🏛️ The PARA & BASB (CODE) Architecture
+
+The suite adopts Tiago Forte's **Building a Second Brain (BASB)** and **PARA** methods by default:
+
+* **P — Projects (`Projects/`)**: Active repositories, deliverables, and goal-oriented initiatives (`Overview.md`, `Worklog.md`, `Tasks.md`, `Decisions.md`, `Dashboard.canvas`).
+* **A — Areas (`Areas/`)**: Ongoing standards and directives without a fixed end date (`Tone and Voice.md`, `Design Tokens.md`, `Architecture Principles.md`). *(Legacy `System/` folders are automatically supported as fallbacks)*.
+* **R — Resources (`Resources/`)**: Reusable technical cheat-sheets, third-party API contracts, prompt packs, and reference guides.
+* **A — Archives (`Archives/`)**: Completed projects, deprecated architecture logs, and yearly rotated worklogs (`Archives/Worklogs/`).
+
+**The CODE Operating Cycle**:
+1. **Capture**: Intercept git commits, tickets, and architectural trade-offs automatically via live-sync hooks.
+2. **Organize**: Route entities directly into their proper PARA bucket.
+3. **Distill**: Consolidate micro-commits into **1 Milestone per Rollup**, extract concise ADRs, and prune noise.
+4. **Express**: Render interactive spatial **`Dashboard.canvas`** boards, Mermaid dependency graphs, and verified production code.
 
 ---
 

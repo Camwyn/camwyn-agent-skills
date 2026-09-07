@@ -136,6 +136,13 @@ Before attempting any vault operations, detect available communication providers
    - Save or update `.agents/obsidian-config.json`:
      ```json
      {
+       "layout": "para",
+       "para": {
+         "projects_dir": "Projects",
+         "areas_dir": "Areas",
+         "resources_dir": "Resources",
+         "archives_dir": "Archives"
+       },
        "provider": "auto",
        "providers": {
          "headless_mcp": {
@@ -154,10 +161,8 @@ Before attempting any vault operations, detect available communication providers
          }
        },
        "default_vault": "my_vault",
-       "projects_dir": "Projects",
        "organization_nesting": "auto",
        "worktree_support": true,
-       "system_dir": "System",
        "adrs_per_context_limit": 5,
        "auto_sync": {
          "enabled": true,
@@ -171,40 +176,56 @@ Before attempting any vault operations, detect available communication providers
          "worklog_archive_limit_lines": 1000
        },
        "global_notes": {
-         "tone_and_voice": "System/Tone and Voice.md",
-         "design_tokens": "System/Design Tokens.md",
-         "architecture": "System/Architecture Principles.md"
+         "tone_and_voice": "Areas/Tone and Voice.md",
+         "design_tokens": "Areas/Design Tokens.md",
+         "architecture": "Areas/Architecture Principles.md"
+       },
+       "legacy_fallbacks": {
+         "system_dir": "System"
        }
      }
      ```
 
 ---
 
-## 2. Vault Structure Inspection
+## 2. Vault Structure Inspection (The PARA Framework)
 
-Search the configured vault for foundational folders and notes:
+Validate that the vault adheres to Tiago Forte's **PARA** organizational model:
 
 1. **Projects Directory (`Projects/`)**:
    - Query `obsidian_search_vault` with `scope: "Projects"`.
-   - If missing, offer to create `Projects/` directory via `obsidian_create_directory`.
+   - Purpose: Active repositories, codebases, deliverables, and goal-oriented initiatives.
+   - If missing, create `Projects/` via `obsidian_create_directory`.
 
-2. **System & Directives Directory (`System/`)**:
-   - Query `obsidian_search_vault` with `scope: "System"`.
-   - If missing, offer to create `System/` directory via `obsidian_create_directory`.
+2. **Areas Directory (`Areas/`)**:
+   - Query `obsidian_search_vault` with `scope: "Areas"`.
+   - Purpose: Ongoing standards, architectural principles, voice/tone rules, and design systems.
+   - *Legacy Fallback*: If `System/` exists, ask user if they want to retain it or migrate to `Areas/`.
+   - If missing and no `System/` exists, create `Areas/` via `obsidian_create_directory`.
+
+3. **Resources Directory (`Resources/`)**:
+   - Query `obsidian_search_vault` with `scope: "Resources"`.
+   - Purpose: Reference libraries, external API specs, prompt playbooks, and cheat-sheets.
+   - If missing, create `Resources/` via `obsidian_create_directory`.
+
+4. **Archives Directory (`Archives/`)**:
+   - Query `obsidian_search_vault` with `scope: "Archives"`.
+   - Purpose: Inactive projects, deprecated architectures, and rotated historical worklogs (`Archives/Worklogs/`).
+   - If missing, create `Archives/` via `obsidian_create_directory`.
 
 ---
 
-## 3. Global Knowledge Note Bootstrapping
+## 3. Global Knowledge Note Bootstrapping (Areas of Responsibility)
 
-Check if foundational global directives exist, and offer to create starter templates for any that are missing:
+Check if foundational directives exist in `Areas/` (falling back to `System/` if present), and bootstrap starter templates for any that are missing:
 
-### A. `System/Tone and Voice.md`
+### A. `Areas/Tone and Voice.md`
 If missing, offer to create with template:
 ```markdown
 ---
 title: "Global Tone & Voice Guidelines"
-type: system-directive
-tags: [system, voice, tone, style]
+type: area-directive
+tags: [area, voice, tone, style, para/areas]
 ---
 
 # Tone & Voice Guidelines
@@ -222,13 +243,13 @@ Authoritative voice, tone, and communication principles to ground all user-facin
 - **Empty States**: Friendly guidance on what to do first.
 ```
 
-### B. `System/Design Tokens.md`
+### B. `Areas/Design Tokens.md`
 If missing, offer to create with template:
 ```markdown
 ---
 title: "Global Design System & Styling Rules"
-type: system-directive
-tags: [system, design, styling, tokens]
+type: area-directive
+tags: [area, design, styling, tokens, para/areas]
 ---
 
 # Design System & Styling Tokens
@@ -245,13 +266,13 @@ Authoritative design rules, typography, and color palettes for web apps and user
 - Maintain responsive fluid layouts with container queries and modern CSS variables.
 ```
 
-### C. `System/Architecture Principles.md`
+### C. `Areas/Architecture Principles.md`
 If missing, offer to create with template:
 ```markdown
 ---
 title: "Engineering & Architecture Principles"
-type: system-directive
-tags: [system, architecture, engineering]
+type: area-directive
+tags: [area, architecture, engineering, para/areas]
 ---
 
 # Engineering & Architecture Principles
@@ -262,6 +283,20 @@ Core architectural standards across repositories and projects.
 - **DRY & Modular**: Keep components focused on a single responsibility.
 - **Explicit over Clever**: Write readable, well-typed, and maintainable code.
 - **Decision Records**: Log all major architectural pivots and rejected alternatives to `Decisions.md`.
+```
+
+### D. `Resources/README.md`
+If missing, offer to create reference index starter:
+```markdown
+---
+title: "Resources & Reference Index"
+type: resource-index
+tags: [resource, cheatsheets, references, para/resources]
+---
+
+# Resources & Reference Index
+
+Shared reference materials, API contracts, prompt packs, and technical cheatsheets accessible across all projects.
 ```
 
 ---
