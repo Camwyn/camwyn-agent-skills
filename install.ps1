@@ -2,13 +2,15 @@
 # Recursively links all skill packages into your agent skills directory via NTFS Directory Junctions
 param (
     [string]$TargetDir = "$HOME\.agents\skills",
+    [string]$RulesDir = "$HOME\.agents\rules",
     [switch]$Copy = $false
 )
 
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "  Camwyn Agent Skills Installer" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "Target Directory: $TargetDir`n" -ForegroundColor Gray
+Write-Host "Target Directory : $TargetDir" -ForegroundColor Gray
+Write-Host "Rules Directory  : $RulesDir`n" -ForegroundColor Gray
 
 if (-not (Test-Path $TargetDir)) {
     New-Item -ItemType Directory -Path $TargetDir -Force | Out-Null
@@ -37,6 +39,34 @@ foreach ($skillFile in $skillFiles) {
     $installedSkills += $skillName
 }
 
+# Link or copy behavioral rules into .agents/rules
+$installedRules = @()
+if (Test-Path "$PSScriptRoot\rules") {
+    if (-not (Test-Path $RulesDir)) {
+        New-Item -ItemType Directory -Path $RulesDir -Force | Out-Null
+    }
+    $ruleFiles = Get-ChildItem -Path "$PSScriptRoot\rules" -Filter "*.md"
+    foreach ($rule in $ruleFiles) {
+        $dest = Join-Path $RulesDir $rule.Name
+        if (Test-Path $dest) {
+            Remove-Item -Path $dest -Force
+        }
+        if ($Copy) {
+            Copy-Item -Path $rule.FullName -Destination $dest -Force
+            Write-Host "  [COPY]   Rule: $($rule.Name)" -ForegroundColor Green
+        } else {
+            try {
+                New-Item -ItemType HardLink -Path $dest -Target $rule.FullName -ErrorAction Stop | Out-Null
+                Write-Host "  [LINK]   Rule: $($rule.Name)" -ForegroundColor Green
+            } catch {
+                Copy-Item -Path $rule.FullName -Destination $dest -Force
+                Write-Host "  [COPY]   Rule: $($rule.Name)" -ForegroundColor Yellow
+            }
+        }
+        $installedRules += $rule.Name
+    }
+}
+
 # Install obsidian-config.json if not present
 $configTarget = "$HOME\.agents\obsidian-config.json"
 $configExample = "$PSScriptRoot\skills\obsidian-rag\obsidian-config.json.example"
@@ -45,8 +75,18 @@ if (-not (Test-Path $configTarget) -and (Test-Path $configExample)) {
     Copy-Item -Path $configExample -Destination $configTarget
 }
 
-Write-Host "`nAll skills installed and active!" -ForegroundColor Cyan
+Write-Host "`nAll skills and rules installed and active!" -ForegroundColor Cyan
 Write-Host "Available skills ($($installedSkills.Count)):"
 foreach ($s in ($installedSkills | Sort-Object)) {
     Write-Host "  - /$s" -ForegroundColor White
 }
+
+if ($installedRules.Count -gt 0) {
+    Write-Host "Active rules ($($installedRules.Count)):"
+    foreach ($r in ($installedRules | Sort-Object)) {
+        Write-Host "  - $r" -ForegroundColor White
+    }
+}
+
+Write-Host "`nNext Step:" -ForegroundColor Cyan
+Write-Host "  Run '/obsidian-setup' in chat to configure your vault, or customize '$configTarget'`n" -ForegroundColor Gray

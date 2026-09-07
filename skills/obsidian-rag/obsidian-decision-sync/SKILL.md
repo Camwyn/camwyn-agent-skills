@@ -2,13 +2,13 @@
 name: obsidian-decision-sync
 description: >
   Captures architectural, voice, styling, and technical decisions made during development
-  and syncs them to the project's Decision Log in Obsidian ('camwyn_codes' vault) as structured ADRs.
+  and syncs them to the project's Decision Log in Obsidian as structured ADRs.
   Use when confirming major technical choices, after plan reviews, or when asked to 'log decision'.
 ---
 
 # Obsidian Decision Sync
 
-Captures critical decisions made during pair programming, architecture planning, and feature implementation, persisting them into your central Obsidian knowledge vault (`camwyn_codes`) so future agent sessions and team members retain full rationale and rejected alternatives.
+Captures critical decisions made during pair programming, architecture planning, and feature implementation, persisting them into your central Obsidian knowledge vault (resolving `default_vault` from `.agents/obsidian-config.json`) so future agent sessions and team members retain full rationale and rejected alternatives.
 
 ---
 
@@ -39,7 +39,7 @@ Every decision record must capture **Choice**, **Rationale**, and **Rejected Alt
 
 ## 3. Concurrency-Safe Sync Flow
 
-To safely write to Obsidian without race conditions or overwriting desktop changes (resolves vault name from `.agents/obsidian-config.json`, defaulting to `camwyn_codes`):
+To safely write to Obsidian without race conditions or overwriting desktop changes (resolves vault name `<VaultName>` from `default_vault` in `.agents/obsidian-config.json`):
 
 1. **Locate Target Note**:
    - Primary: `Projects/<ProjectName>/Decisions.md`
@@ -48,7 +48,7 @@ To safely write to Obsidian without race conditions or overwriting desktop chang
 
 2. **Read Note & Capture Etag**:
    - Call `obsidian_read_note`:
-     - `vault`: `"camwyn_codes"`
+     - `vault`: `"<VaultName>"`
      - `path`: target note path
    - Extract `etag` and current content.
 
@@ -57,7 +57,7 @@ To safely write to Obsidian without race conditions or overwriting desktop chang
 
 4. **Write Note via Safe Etag**:
    - Call `obsidian_edit_note`:
-     - `vault`: `"camwyn_codes"`
+     - `vault`: `"<VaultName>"`
      - `path`: target note path
      - `content`: updated content
      - `etag`: captured etag

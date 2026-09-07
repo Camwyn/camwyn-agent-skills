@@ -23,6 +23,9 @@ camwyn-agent-skills/
 ├── install.ps1                    # Master recursive installer
 ├── install.sh                     # Master recursive installer (bash)
 │
+├── rules/                         # Autonomous agent behavioral rules
+│   └── obsidian-live-sync.md      # Auto-sync on commits, tasks, and decisions
+│
 └── skills/
     ├── audit-skills/              # IDE-wide dual-pass telemetry & skill auditor
     │   └── SKILL.md
@@ -35,7 +38,9 @@ camwyn-agent-skills/
         │   └── SKILL.md
         ├── obsidian-rag-grounding/# Knowledge base grounding with cascading overrides
         │   └── SKILL.md
-        └── obsidian-decision-sync/# Concurrency-safe ADR decision capture
+        ├── obsidian-decision-sync/# Concurrency-safe ADR decision capture
+        │   └── SKILL.md
+        └── obsidian-auto-sync/    # Autonomous commit, task, and decision logger
             └── SKILL.md
 ```
 
@@ -47,10 +52,11 @@ Bi-directional sync, RAG grounding, and structured Architectural Decision Record
 
 | Skill | Trigger / Command | Description |
 |---|---|---|
-| **[`obsidian-setup`](skills/obsidian-rag/obsidian-setup/SKILL.md)** | `/obsidian-setup` | Interactive setup wizard. Discovers available vaults, sets default vault preferences, validates folder structure (`Projects/`, `System/`), and bootstraps global voice/design/architecture notes. |
+| **[`obsidian-setup`](skills/obsidian-rag/obsidian-setup/SKILL.md)** | `/obsidian-setup` | Interactive setup wizard. Discovers available vaults, sets default vault preferences, validates folder structure (`Projects/`, `System/`), and configures autonomous live-sync. |
 | **[`obsidian-project-init`](skills/obsidian-rag/obsidian-project-init/SKILL.md)** | `/obsidian-init` | Scans vault for current repo, initializes `Projects/<Name>/Overview.md` + `Decisions.md`, or detects drift and prompts for non-destructive merges if present. |
 | **[`obsidian-rag-grounding`](skills/obsidian-rag/obsidian-rag-grounding/SKILL.md)** | `/obsidian-rag` | Ingests project overview, recent ADRs, and system guidelines with cascading project overrides to ground creative, UI, and coding tasks. |
 | **[`obsidian-decision-sync`](skills/obsidian-rag/obsidian-decision-sync/SKILL.md)** | `/obsidian-decision` | Formats choices into structured ADRs (*Chosen, Rationale, Rejected Alternatives*) and syncs via safe `etag` concurrency. |
+| **[`obsidian-auto-sync`](skills/obsidian-rag/obsidian-auto-sync/SKILL.md)** | Autonomous / Event-driven | Automatically records commits to `Worklog.md`, tickets to `Tasks.md`, and ADRs to `Decisions.md`, dynamically linking them in `Overview.md`. |
 
 ---
 
@@ -76,6 +82,23 @@ Running the install script automatically discovers all skills recursively and cr
 chmod +x install.sh
 ./install.sh
 ```
+
+### ⚙️ Post-Install Configuration
+
+Once installed, configure your Obsidian vault preferences:
+
+1. **Interactive Wizard (Recommended)**:
+   In any agent chat session, run:
+   ```text
+   /obsidian-setup
+   ```
+   The wizard will discover available vaults via the Obsidian MCP server, prompt you to select your default vault, verify folder structure (`Projects/`, `System/`), and bootstrap foundational system directives (`Tone and Voice.md`, `Design Tokens.md`, `Architecture Principles.md`).
+
+2. **Manual / Headless Configuration**:
+   The installer creates a local configuration file at:
+   - `~/.agents/obsidian-config.json`
+
+   You can open this file and set `"default_vault"` directly to your preferred vault name without modifying any repository files or git-tracked skills.
 
 ---
 

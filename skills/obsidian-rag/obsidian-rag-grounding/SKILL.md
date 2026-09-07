@@ -3,12 +3,12 @@ name: obsidian-rag-grounding
 description: >
   Uses Obsidian as an authoritative source of truth for tone, voice, design principles,
   and architectural constraints. Retrieves project context and system guidelines with
-  cascading project-level overrides from the Obsidian vault ('camwyn_codes') to ground tasks.
+  cascading project-level overrides from the configured Obsidian vault to ground tasks.
 ---
 
 # Obsidian RAG Grounding
 
-Retrieves authoritative guidelines and project knowledge from Obsidian (`camwyn_codes` vault) to ground the agent before drafting copy, designing UI components, setting up architecture, or making style decisions.
+Retrieves authoritative guidelines and project knowledge from Obsidian (resolving `default_vault` from `.agents/obsidian-config.json`) to ground the agent before drafting copy, designing UI components, setting up architecture, or making style decisions.
 
 Supports **Cascading Directives**: Project-specific overrides take precedence over global `System/` defaults.
 
@@ -84,5 +84,5 @@ Once grounded:
 
 - If no project note or system note exists in Obsidian:
   - Do NOT crash or block the user.
-  - Emit: `Obsidian Grounding: No notes found in vault 'camwyn_codes' for <ProjectName>. Proceeding with repository context.`
+  - Emit: `Obsidian Grounding: No notes found in vault '<VaultName>' for <ProjectName>. Proceeding with repository context.`
   - Suggest running `obsidian-project-init` (`/obsidian-init`) to bootstrap the project.

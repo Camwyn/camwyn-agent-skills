@@ -18,15 +18,21 @@ Interactive configuration wizard for connecting AI agent workflows to your Obsid
 1. **List Available Vaults**:
    - Call `obsidian_list_vaults` to discover all mounted vault IDs.
 2. **Confirm Default Vault**:
-   - Prompt the user to select or confirm the primary vault (e.g., `camwyn_codes`).
+   - Prompt the user to select or confirm the primary vault (e.g., `personal_vault` or `notes`).
 3. **Persist Configuration**:
    - Save or update `.agents/obsidian-config.json`:
      ```json
      {
-       "default_vault": "camwyn_codes",
+       "default_vault": "my_vault",
        "projects_dir": "Projects",
        "system_dir": "System",
        "adrs_per_context_limit": 5,
+       "auto_sync": {
+         "enabled": true,
+         "on_commit": true,
+         "on_decision": true,
+         "on_todo": true
+       },
        "global_notes": {
          "tone_and_voice": "System/Tone and Voice.md",
          "design_tokens": "System/Design Tokens.md",
@@ -123,10 +129,32 @@ Core architectural standards across repositories and projects.
 
 ---
 
-## 4. Verification & Summary
+## 4. Autonomous Live-Sync Configuration
+
+Ask the user if they would like the agent to autonomously keep Obsidian updated as work happens:
+
+1. **Prompt for Live Sync**:
+   - Ask if they want autonomous synchronization enabled:
+     - Commits logged to `Projects/<ProjectName>/Worklog.md`
+     - Tasks/TODOs logged to `Projects/<ProjectName>/Tasks.md`
+     - Architectural decisions logged to `Projects/<ProjectName>/Decisions.md`
+2. **Persist Toggles**:
+   - Update `auto_sync` in `.agents/obsidian-config.json`:
+     ```json
+     "auto_sync": {
+       "enabled": true,
+       "on_commit": true,
+       "on_decision": true,
+       "on_todo": true
+     }
+     ```
+
+---
+
+## 5. Verification & Summary
 
 1. **Verify Tool Permissions**:
    - Confirm read, write, and search operations succeed against the selected vault.
 2. **Present Final Setup Summary**:
-   - Display configured vault name, detected directories, and available global notes.
-   - Summarize how downstream skills (`obsidian-project-init`, `obsidian-rag-grounding`, `obsidian-decision-sync`) will use this configuration.
+   - Display configured vault name, detected directories, auto-sync status, and available global notes.
+   - Summarize how downstream skills (`obsidian-project-init`, `obsidian-rag-grounding`, `obsidian-decision-sync`, `obsidian-auto-sync`) will use this configuration.

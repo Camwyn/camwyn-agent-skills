@@ -8,7 +8,7 @@ description: >
 
 # Obsidian Project Init & Sync
 
-Connects the active codebase to your central Obsidian knowledge vault (`camwyn_codes`). Discovers project identity, checks if project documentation exists in Obsidian, bootstraps missing notes with structured templates, or detects drift and prompts for non-destructive updates.
+Connects the active codebase to your central Obsidian knowledge vault (resolved from `default_vault` in `.agents/obsidian-config.json`). Discovers project identity, checks if project documentation exists in Obsidian, bootstraps missing notes with structured templates, or detects drift and prompts for non-destructive updates.
 
 ---
 
@@ -17,8 +17,8 @@ Connects the active codebase to your central Obsidian knowledge vault (`camwyn_c
 When triggered:
 
 1. **Resolve Vault Target**:
-   - Check `.agents/obsidian-config.json` for `default_vault` (defaults to `camwyn_codes`).
-   - If unsure or on error, call `obsidian_list_vaults` to confirm available vaults.
+   - Check `.agents/obsidian-config.json` for `default_vault` (e.g. resolve `<VaultName>`).
+   - If unsure, missing, or on error, call `obsidian_list_vaults` to confirm available vaults.
 
 2. **Inspect Current Codebase Context**:
    - **Project Name**: Base directory name, `name` in `package.json` / `pyproject.toml` / `Cargo.toml`, or git repository name.
@@ -27,7 +27,7 @@ When triggered:
 
 3. **Search Obsidian Vault**:
    - Call `obsidian_search_vault`:
-     - `vault`: `"camwyn_codes"`
+     - `vault`: `"<VaultName>"`
      - `query`: `"<ProjectName>"`
      - `mode`: `"filename"` (and fallback to `"content"` with `scope: "Projects"`)
 
@@ -39,7 +39,7 @@ If no note matches the project name under `Projects/`:
 
 1. **Create Project Directory**:
    - Call `obsidian_create_directory`:
-     - `vault`: `"camwyn_codes"`
+     - `vault`: `"<VaultName>"`
      - `path`: `"Projects/<ProjectName>"`
 
 2. **Initialize `Projects/<ProjectName>/Overview.md`**:
@@ -140,6 +140,6 @@ If a matching project note is found (e.g. `Projects/<ProjectName>/Overview.md` o
 
 ## 4. Error Handling & Guardrails
 
-- **Vault Not Connected / Missing**: If `camwyn_codes` is unreachable, call `obsidian_list_vaults` and prompt the user to pick an active vault.
+- **Vault Not Connected / Missing**: If the configured vault is unreachable, call `obsidian_list_vaults` and prompt the user to pick an active vault.
 - **Etag Conflict on Edit**: If `obsidian_edit_note` returns a 412/etag mismatch, re-read the note immediately, re-calculate diff, and retry the edit.
 - **Never Overwrite Blindly**: Never replace entire note content without preserving existing non-metadata text written by the user.

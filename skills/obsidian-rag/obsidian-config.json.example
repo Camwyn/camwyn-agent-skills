@@ -1,8 +1,14 @@
 {
-  "default_vault": "camwyn_codes",
+  "default_vault": "my_vault",
   "projects_dir": "Projects",
   "system_dir": "System",
   "adrs_per_context_limit": 5,
+  "auto_sync": {
+    "enabled": true,
+    "on_commit": true,
+    "on_decision": true,
+    "on_todo": true
+  },
   "global_notes": {
     "tone_and_voice": "System/Tone and Voice.md",
     "design_tokens": "System/Design Tokens.md",
