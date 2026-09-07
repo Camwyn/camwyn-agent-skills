@@ -60,15 +60,18 @@ If no note matches the project target path under `Projects/`:
 ---
 title: "<ProjectName>"
 type: project
-tags:
-  - project
-  - active
+pillar: project
+status: active
 tech_stack:
   - <tech_1>
   - <tech_2>
 created_at: <YYYY-MM-DD>
-status: active
+updated_at: <YYYY-MM-DD>
 repo_path: "<relative_or_git_url>"
+tags:
+  - project
+  - active
+  - para/projects
 ---
 
 # <ProjectName>
@@ -105,6 +108,15 @@ graph TD
 - Optional Project Overrides:
   - [[<TargetProjectPath>/Tone and Voice|Custom Voice & Tone]] *(if overriding global)*
   - [[<TargetProjectPath>/Design Tokens|Custom Design Tokens]] *(if overriding global)*
+
+## 📊 Live Project Queries (Dataview)
+*(Renders reactive live tables when the Obsidian Dataview plugin is installed)*
+
+```dataview
+TASK
+FROM "<TargetProjectPath>"
+WHERE !completed
+```
 ```
 
 3. **Initialize `<TargetProjectPath>/Decisions.md`**:

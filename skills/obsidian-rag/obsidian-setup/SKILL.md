@@ -164,6 +164,10 @@ Before attempting any vault operations, detect available communication providers
        "organization_nesting": "auto",
        "worktree_support": true,
        "adrs_per_context_limit": 5,
+       "dataview": {
+         "enabled": true,
+         "render_dynamic_queries": true
+       },
        "auto_sync": {
          "enabled": true,
          "on_commit": true,

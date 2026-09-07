@@ -128,6 +128,14 @@ Active codebases, deliverables, and goal-oriented repositories:
 |---|---|---|---|
 | **[[Projects/<ProjectName>/Overview|<ProjectName>]]** | `<Tech1>, <Tech2>` | `Active` | [[Projects/<ProjectName>/Dashboard.canvas|Canvas]] · [[Projects/<ProjectName>/Worklog|Worklog]] · [[Projects/<ProjectName>/Tasks|Tasks]] · [[Projects/<ProjectName>/Decisions|Decisions]] |
 
+### 📊 Reactive Project Directory (Dataview)
+```dataview
+TABLE status AS "Status", tech_stack AS "Tech Stack", file.mtime AS "Last Modified"
+FROM "Projects"
+WHERE type = "project"
+SORT file.mtime DESC
+```
+
 ---
 
 ## 📐 2. Areas (Standards & Directives)
@@ -140,9 +148,30 @@ Ongoing responsibilities and standards that govern all initiatives without a fix
 | **Design System** | UI styling, typography, HSL palettes | [[Areas/Design Tokens|Design System Tokens]] |
 | **Architecture** | DRY, modular design, ADR rules | [[Areas/Architecture Principles|Architecture Principles]] |
 
+### 📊 Reactive Directives Directory (Dataview)
+```dataview
+TABLE category AS "Category", file.folder AS "Location"
+FROM "Areas"
+WHERE type = "area-directive"
+SORT file.name ASC
+```
+
 ---
 
-## 📚 3. Resources (Reference & Assets)
+## 📋 3. Vault-Wide Active Tasks (Dataview)
+
+Consolidated view of all uncompleted tasks across every active project:
+
+```dataview
+TASK
+FROM "Projects"
+WHERE !completed
+GROUP BY file.folder
+```
+
+---
+
+## 📚 4. Resources (Reference & Assets)
 
 Reusable technical references, API contracts, prompt packs, and cheatsheets:
 
@@ -151,7 +180,7 @@ Reusable technical references, API contracts, prompt packs, and cheatsheets:
 
 ---
 
-## 📦 4. Archives (Cold Storage)
+## 📦 5. Archives (Cold Storage)
 
 Completed projects, deprecated systems, and rotated historical worklogs:
 

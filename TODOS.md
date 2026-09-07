@@ -12,6 +12,8 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## ✅ Completed
 
+- [x] **Dataview Plugin Schema & Dynamic Query Blocks**
+  - Standardized YAML frontmatter schemas across all suite notes (`pillar`, `status`, `tech_stack`, `created_at`, `updated_at`, `tags`) and embedded dynamic Dataview query blocks (DQL) into `Overview.md` (project task aggregation) and `PARA-Index.md` (active projects directory, directives directory, and vault-wide task rollups) with graceful degradation to static markdown tables. Extended configuration schemas in `obsidian-config.json.example` and live config with `"dataview": { "enabled": true, "render_dynamic_queries": true }`. *(2026-09-07)*
 - [x] **Native Git Post-Commit Hook Integration**
   - Added standalone `.git/hooks/post-commit` script with cross-platform runners (`scripts/obsidian-post-commit.ps1` and `scripts/obsidian-post-commit.sh`) to queue milestone commits created outside AI agent turns directly into `.agents/pending-sync.json`. Integrated automatic hook installation into `install.ps1` and `install.sh`, documented in `obsidian-auto-sync/SKILL.md` and `README.md`. *(2026-09-07)*
 - [x] **Global PARA Map of Content (MOC) & Master Canvas Generator (`obsidian-index`)**
