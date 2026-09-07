@@ -27,6 +27,7 @@ Every decision record must capture **Choice**, **Rationale**, and **Rejected Alt
 ### ADR-[YYYYMMDD-HHMM]: <Descriptive Decision Title>
 - **Date**: <YYYY-MM-DD>
 - **Status**: Accepted
+- **Supersedes**: [[#ADR-[PriorID]: <Prior Title>|ADR-[PriorID]]] *(if replacing an older decision)*
 - **Context**: <1-2 sentences on what problem or tradeoff necessitated this decision>
 - **Decision**: <Clear statement of the chosen architecture, library, pattern, or rule>
 - **Rationale**: <Why this option was selected, referencing performance, DX, simplicity, or constraints>
@@ -37,7 +38,7 @@ Every decision record must capture **Choice**, **Rationale**, and **Rejected Alt
 
 ---
 
-## 3. Concurrency-Safe Sync Flow
+## 3. Concurrency-Safe Sync Flow & Lifecycle Management
 
 To safely write to Obsidian without race conditions or overwriting desktop changes (resolves vault name `<VaultName>` from `default_vault` in `.agents/obsidian-config.json`):
 
@@ -52,15 +53,25 @@ To safely write to Obsidian without race conditions or overwriting desktop chang
      - `path`: target note path
    - Extract `etag` and current content.
 
-3. **Format & Append ADR**:
-   - Append the new ADR block at the end of the note (or under the appropriate `# ... ADR` header).
+3. **Automated Superseded ADR Detection**:
+   - Scan existing ADR entries in the note for overlapping topics, superseded technologies, or conflicting choices (e.g. replacing Tailwind with Vanilla CSS, or switching database drivers).
+   - If a related or conflicting ADR is found:
+     - Prompt user or confirm: `Does this decision supersede ADR-[ID]: <Title>?`
+     - If confirmed:
+       - Update the previous ADR's status line from:
+         `- **Status**: Accepted`
+         to:
+         `- **Status**: Superseded by [[#ADR-[NewID]: <New Title>|ADR-[NewID]]]`
+       - Add `- **Supersedes**: [[#ADR-[PriorID]: <Prior Title>|ADR-[PriorID]]]` to the new ADR block.
 
-4. **Write Note via Safe Etag**:
+4. **Format & Write Note via Safe Etag**:
+   - Append the new ADR block (and update the prior ADR status if superseded) in the content buffer.
    - Call `obsidian_edit_note`:
      - `vault`: `"<VaultName>"`
      - `path`: target note path
-     - `content`: updated content
-     - `etag`: captured etag
+     - `operation`: `"replace"`
+     - `content`: updated note content
+     - `if_match`: captured etag
 
 5. **Handle Conflicts & Reachability (Bounded Backoff & Queue Fallback)**:
    - If the `obsidian` MCP toolset is missing or unreachable:

@@ -151,11 +151,17 @@ Triggered when an architectural choice, dependency selection, or styling decisio
 
    ---
    ```
-3. **Append ADR**:
+3. **Automated Superseded Detection & Append**:
+   - Check existing ADRs in `Projects/<ProjectName>/Decisions.md` for overlapping or contradicting decisions.
+   - If an existing ADR is superseded:
+     - Update its status to `- **Status**: Superseded by [[#ADR-[NewID]: <New Title>|ADR-[NewID]]]`.
+     - In the new ADR, include `- **Supersedes**: [[#ADR-[PriorID]: <Prior Title>|ADR-[PriorID]]]`.
+   - Format entry:
    ```markdown
    ### ADR-[YYYYMMDD-HHMM]: <Descriptive Title>
    - **Date**: <YYYY-MM-DD>
    - **Status**: Accepted
+   - **Supersedes**: [[#ADR-[PriorID]: <Prior Title>|ADR-[PriorID]]] *(if applicable)*
    - **Context**: <1-2 sentences on what problem or tradeoff necessitated this decision>
    - **Decision**: <Clear statement of the chosen architecture, library, pattern, or rule>
    - **Rationale**: <Why this option was selected, referencing performance, DX, simplicity, or constraints>
