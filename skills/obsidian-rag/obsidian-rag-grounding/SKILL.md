@@ -82,6 +82,10 @@ Once grounded:
 
 ## 5. Fallback & Graceful Degradation
 
+- If the `obsidian` MCP toolset is missing or unreachable:
+  - Do NOT crash, error out, or halt the conversation.
+  - Emit: `⚠️ Obsidian Grounding: Obsidian MCP server not detected or unreachable. Grounding with local repository context only. (Run /obsidian-setup to configure).`
+  - Proceed with existing repository directives, AGENTS.md, or system prompts.
 - If no project note or system note exists in Obsidian:
   - Do NOT crash or block the user.
   - Emit: `Obsidian Grounding: No notes found in vault '<VaultName>' for <ProjectName>. Proceeding with repository context.`

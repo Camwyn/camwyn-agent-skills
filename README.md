@@ -83,6 +83,81 @@ chmod +x install.sh
 ./install.sh
 ```
 
+---
+
+### 🔌 Prerequisites (Obsidian MCP Server)
+
+The Obsidian Suite communicates with your local Obsidian vault via Model Context Protocol (MCP) using `obsidian-mcp`.
+
+Ensure your agent or IDE has the `obsidian` MCP server configured:
+
+#### Antigravity IDE
+Add to `~/.gemini/config/mcp_config.json`:
+- **Windows**:
+  ```json
+  {
+    "mcpServers": {
+      "obsidian": {
+        "command": "cmd.exe",
+        "args": [
+          "/c",
+          "npx",
+          "-y",
+          "obsidian-mcp",
+          "serve",
+          "--vault",
+          "<vault_name>=<path_to_vault>"
+        ]
+      }
+    }
+  }
+  ```
+- **macOS / Linux**:
+  ```json
+  {
+    "mcpServers": {
+      "obsidian": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "obsidian-mcp",
+          "serve",
+          "--vault",
+          "<vault_name>=<path_to_vault>"
+        ]
+      }
+    }
+  }
+  ```
+
+#### Claude Desktop / Claude Code
+Add to `claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "obsidian": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "obsidian-mcp",
+        "serve",
+        "--vault",
+        "<vault_name>=<path_to_vault>"
+      ]
+    }
+  }
+}
+```
+*(On Windows, use `"command": "cmd.exe"` with `"args": ["/c", "npx", ...]`)*.
+
+#### Cursor
+Under **Cursor Settings > Features > MCP Servers**, add a new server:
+- **Name**: `obsidian`
+- **Type**: `command`
+- **Command**: `npx -y obsidian-mcp serve --vault <vault_name>=<path_to_vault>`
+
+---
+
 ### ⚙️ Post-Install Configuration
 
 Once installed, configure your Obsidian vault preferences:

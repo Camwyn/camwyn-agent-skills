@@ -6,10 +6,6 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## 🛠️ High Priority / Risk Mitigations
 
-- [ ] **Actionable Missing-MCP Detection & Guidance**
-  - *Context*: If a user runs `/obsidian-setup` or triggers live-sync without the Obsidian MCP server running, provide immediate actionable diagnosis.
-  - *Mitigation*: Implement early-exit checks in `/obsidian-setup` and runtime skills with clear setup steps.
-
 - [ ] **Automated Drift Detection & Reconciliation**
   - *Context*: Prevent codebase reality and vault overview from diverging over time.
   - *Mitigation*: Expand `/obsidian-init` drift checks for newly added dependencies, tech stack changes, and branch updates.
@@ -18,6 +14,8 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## ✅ Completed
 
+- [x] **Actionable Missing-MCP Detection & Guidance**
+  - Implemented Section 0 MCP health check in `/obsidian-setup` with copy-pasteable configs for Antigravity, Claude Code, and Cursor across Windows/macOS/Linux, non-blocking queue fallback across all runtime skills, and comprehensive docs in `README.md`. *(2026-09-06)*
 - [x] **Concurrency Conflict Backoff & Zero-Data-Loss Replay Queue**
   - Implemented bounded 3-attempt exponential backoff (500ms, 1500ms), fallback persistence to `.agents/pending-sync.json`, automatic queue draining on next sync, and on-demand `/obsidian-flush` manual trigger. *(2026-09-06)*
 - [x] **Define Threshold of Significance & 1-Milestone-per-Rollup**

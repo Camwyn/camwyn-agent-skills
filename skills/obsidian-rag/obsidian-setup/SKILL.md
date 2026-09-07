@@ -11,6 +11,95 @@ description: >
 
 Interactive configuration wizard for connecting AI agent workflows to your Obsidian knowledge base.
 
+## 0. Prerequisite Check & MCP Diagnosis
+
+Before attempting any vault operations, verify that the `obsidian` MCP toolset is available:
+
+1. **Test MCP Toolset**:
+   - Check if `obsidian_list_vaults` exists in the active agent tool definitions and responds.
+2. **If Missing, Unconfigured, or Unreachable**:
+   - **Immediately stop** the setup wizard.
+   - Present a clear, actionable diagnostic box with copy-pasteable configuration snippets:
+
+```markdown
+> 🛑 **Obsidian MCP Server Not Detected or Unreachable**
+>
+> The Obsidian integration requires the `obsidian-mcp` server to communicate with your local Obsidian vault.
+>
+> ### Quick Setup Guide:
+>
+> #### 1. Antigravity IDE
+> Add the server definition to `~/.gemini/config/mcp_config.json`:
+>
+> **Windows**:
+> ```json
+> {
+>   "mcpServers": {
+>     "obsidian": {
+>       "command": "cmd.exe",
+>       "args": [
+>         "/c",
+>         "npx",
+>         "-y",
+>         "obsidian-mcp",
+>         "serve",
+>         "--vault",
+>         "<vault_name>=<absolute_path_to_vault>"
+>       ]
+>     }
+>   }
+> }
+> ```
+>
+> **macOS / Linux**:
+> ```json
+> {
+>   "mcpServers": {
+>     "obsidian": {
+>       "command": "npx",
+>       "args": [
+>         "-y",
+>         "obsidian-mcp",
+>         "serve",
+>         "--vault",
+>         "<vault_name>=<absolute_path_to_vault>"
+>       ]
+>     }
+>   }
+> }
+> ```
+>
+> #### 2. Claude Desktop / Claude Code
+> Add to `claude_desktop_config.json` (under `%APPDATA%\Claude` on Windows or `~/Library/Application Support/Claude` on macOS):
+> ```json
+> {
+>   "mcpServers": {
+>     "obsidian": {
+>       "command": "npx",
+>       "args": [
+>         "-y",
+>         "obsidian-mcp",
+>         "serve",
+>         "--vault",
+>         "<vault_name>=<absolute_path_to_vault>"
+>       ]
+>     }
+>   }
+> }
+> ```
+> *(On Windows, use `command: "cmd.exe"` with `args: ["/c", "npx", ...]` if npx is not directly resolved).*
+>
+> #### 3. Cursor
+> Open **Cursor Settings > Features > MCP Servers** and click **Add New MCP Server**:
+> - **Name**: `obsidian`
+> - **Type**: `command`
+> - **Command**: `npx -y obsidian-mcp serve --vault <vault_name>=<absolute_path_to_vault>`
+>
+> ---
+>
+> 🔄 **After Saving**: Restart or reload your AI agent session, then re-run `/obsidian-setup`.
+```
+
 ---
 
 ## 1. Vault Discovery & Configuration

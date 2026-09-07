@@ -140,6 +140,7 @@ If a matching project note is found (e.g. `Projects/<ProjectName>/Overview.md` o
 
 ## 4. Error Handling & Guardrails
 
+- **MCP Server Missing / Unreachable**: If `obsidian` MCP tools (`obsidian_search_vault`, `obsidian_create_note`, etc.) are not available, halt and advise the user to run `/obsidian-setup` or configure the `obsidian-mcp` server in their agent MCP settings.
 - **Vault Not Connected / Missing**: If the configured vault is unreachable, call `obsidian_list_vaults` and prompt the user to pick an active vault.
 - **Etag Conflict on Edit**: If `obsidian_edit_note` returns a 412/etag mismatch, execute bounded 3-attempt backoff (500ms, 1500ms). If all attempts fail, queue payload to `.agents/pending-sync.json` for later flush.
 - **Never Overwrite Blindly**: Never replace entire note content without preserving existing non-metadata text written by the user.

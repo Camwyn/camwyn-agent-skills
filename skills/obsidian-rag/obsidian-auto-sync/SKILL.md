@@ -164,6 +164,16 @@ Triggered when an architectural choice, dependency selection, or styling decisio
 
 All updates MUST execute through this bounded exponential backoff loop:
 
+0. **MCP Server Reachability Check**:
+   - Verify that the `obsidian` MCP toolset (`obsidian_read_note`, `obsidian_edit_note`) is active and reachable.
+   - If the MCP server is missing, unconfigured, or drops connection:
+     - Do NOT crash, throw unhandled exceptions, or block developer git operations.
+     - Immediately persist the uncommitted payload to `.agents/pending-sync.json` (or `~/.agents/pending-sync.json`).
+     - Emit a clear, non-blocking diagnostic receipt:
+       > ⚠️ **Obsidian Auto-Sync**: Obsidian MCP server is unreachable or not configured.
+       > Queued update to `.agents/pending-sync.json`. Run `/obsidian-setup` or check MCP settings to restore sync.
+     - Terminate the sync attempt gracefully.
+
 1. **Attempt 1**:
    - Call `obsidian_read_note`: retrieve markdown content and current `etag`.
    - Format the update and call `obsidian_edit_note`.

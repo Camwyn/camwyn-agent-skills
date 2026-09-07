@@ -62,7 +62,10 @@ To safely write to Obsidian without race conditions or overwriting desktop chang
      - `content`: updated content
      - `etag`: captured etag
 
-5. **Handle Conflicts (Bounded Backoff & Queue Fallback)**:
+5. **Handle Conflicts & Reachability (Bounded Backoff & Queue Fallback)**:
+   - If the `obsidian` MCP toolset is missing or unreachable:
+     - Append the uncommitted ADR payload to `.agents/pending-sync.json`.
+     - Emit: `⚠️ Obsidian Decision Sync: Obsidian MCP server unreachable. Queued ADR to pending-sync.json.`
    - If `obsidian_edit_note` returns `412 Precondition Failed`:
      - Attempt 2: Pause 500ms, re-read note via `obsidian_read_note`, get fresh content & etag, re-apply ADR, retry.
      - Attempt 3: Pause 1500ms, re-read note and retry.
