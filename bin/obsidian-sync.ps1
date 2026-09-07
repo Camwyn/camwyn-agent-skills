@@ -32,13 +32,13 @@ if (Test-Path $configPath) {
         $provider = if ($cfg.provider) { $cfg.provider } else { "auto" }
         $defaultVault = $cfg.default_vault
         if ($defaultVault -eq "camwyn") {
-            $vaultPath = "C:\Users\camwy\Projects\Camwyn & Co"
+            $vaultPath = "C:\Users\camwy\Projects\Camwyn"
         }
     } catch {}
 }
 
 if (-not $vaultPath -or -not (Test-Path $vaultPath)) {
-    $fallback = "C:\Users\camwy\Projects\Camwyn & Co"
+    $fallback = "C:\Users\camwy\Projects\Camwyn"
     if (Test-Path $fallback) {
         $vaultPath = $fallback
     }

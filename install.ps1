@@ -4,6 +4,7 @@ param (
     [string]$TargetDir = "$HOME\.agents\skills",
     [string]$RulesDir = "$HOME\.agents\rules",
     [string]$BinDir = "$HOME\.agents\bin",
+    [string]$ScriptsDir = "$HOME\.agents\scripts",
     [switch]$Copy = $false
 )
 
@@ -89,6 +90,19 @@ if (Test-Path "$PSScriptRoot\bin") {
         Copy-Item -Path $bin.FullName -Destination $dest -Force
         Write-Host "  [CLI]    $($bin.Name) -> $dest" -ForegroundColor Green
         $installedBin += $bin.Name
+    }
+}
+
+# Install supporting scripts into ScriptsDir
+if (Test-Path "$PSScriptRoot\scripts") {
+    if (-not (Test-Path $ScriptsDir)) {
+        New-Item -ItemType Directory -Path $ScriptsDir -Force | Out-Null
+    }
+    $scriptFiles = Get-ChildItem -Path "$PSScriptRoot\scripts" -File
+    foreach ($sf in $scriptFiles) {
+        $dest = Join-Path $ScriptsDir $sf.Name
+        Copy-Item -Path $sf.FullName -Destination $dest -Force
+        Write-Host "  [SCRIPT] $($sf.Name) -> $dest" -ForegroundColor Green
     }
 }
 

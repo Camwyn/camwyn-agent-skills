@@ -13,14 +13,14 @@ if (-not $VaultPath) {
         try {
             $cfg = Get-Content $configPath -Raw | ConvertFrom-Json
             if ($cfg.default_vault -eq "camwyn") {
-                $VaultPath = "C:\Users\camwy\Projects\Camwyn & Co"
+                $VaultPath = "C:\Users\camwy\Projects\Camwyn"
             }
         } catch {}
     }
 }
 
 if (-not $VaultPath -or -not (Test-Path $VaultPath)) {
-    $fallback = "C:\Users\camwy\Projects\Camwyn & Co"
+    $fallback = "C:\Users\camwy\Projects\Camwyn"
     if (Test-Path $fallback) {
         $VaultPath = $fallback
     } else {
