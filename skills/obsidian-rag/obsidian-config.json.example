@@ -31,6 +31,11 @@
     "enabled": true,
     "render_dynamic_queries": true
   },
+  "digest": {
+    "output_dir": "Areas/00 Camwyn & Co/Digests",
+    "default_period": "weekly",
+    "include_git_commits": true
+  },
   "auto_sync": {
     "enabled": true,
     "on_commit": true,

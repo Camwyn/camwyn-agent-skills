@@ -12,6 +12,8 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## ✅ Completed
 
+- [x] **Automated Weekly / Monthly Rollup Digest Generator (`obsidian-digest` / `/obsidian-digest`)**
+  - Implemented multi-project executive briefing engine consolidating milestones, closed tasks, and architectural decisions (ADRs) across all active codebases into weekly (`YYYY-Www`), monthly (`YYYY-MM`), or custom rolling day-window digests stored in `Areas/00 Camwyn & Co/Digests/`. Added native PowerShell engine (`scripts/generate-digest.ps1`), cross-platform shell wrapper (`scripts/generate-digest.sh`), reactive Dataview recent activity rollups, and `/schedule` automation support. *(2026-09-07)*
 - [x] **Vault Health & Link Integrity Auditor (`obsidian-vault-audit` / `/audit-vault`)**
   - Created multi-vector diagnostic auditor scanning broken wikilinks and markdown links, orphan notes, stub notes, frontmatter schemas, and project companion completeness (`Overview`, `Tasks`, `Worklog`, `Decisions`) with automatic companion note scaffolding (`-ScaffoldMissing`). Added native PowerShell engine (`scripts/audit-vault.ps1`), cross-platform shell wrapper (`scripts/audit-vault.sh`), and full suite integration. *(2026-09-07)*
 - [x] **Dataview Plugin Schema & Dynamic Query Blocks**

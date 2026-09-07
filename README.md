@@ -44,7 +44,9 @@ camwyn-agent-skills/
         │   └── SKILL.md
         ├── obsidian-index/        # Master PARA Map of Content (MOC) & Canvas generator
         │   └── SKILL.md
-        └── obsidian-vault-audit/  # Vault health & link integrity diagnostic auditor
+        ├── obsidian-vault-audit/  # Vault health & link integrity diagnostic auditor
+        │   └── SKILL.md
+        └── obsidian-digest/       # Automated weekly/monthly executive rollup generator
             └── SKILL.md
 ```
 
@@ -63,6 +65,7 @@ Bi-directional sync, RAG grounding, and structured Architectural Decision Record
 | **[`obsidian-auto-sync`](skills/obsidian-rag/obsidian-auto-sync/SKILL.md)** | Autonomous / `/obsidian-flush` | Automatically records commits to `Worklog.md` (with 1,000-line milestone rotation), tickets to `Tasks.md`, and ADRs to `Decisions.md` with zero-data-loss replay queue. |
 | **[`obsidian-index`](skills/obsidian-rag/obsidian-index/SKILL.md)** | `/obsidian-index` | Compiles an authoritative master Map of Content (`PARA-Index.md`) and interactive spatial visual board (`PARA-Index.canvas`) across all 4 PARA pillars. |
 | **[`obsidian-vault-audit`](skills/obsidian-rag/obsidian-vault-audit/SKILL.md)** | `/audit-vault` | Multi-vector diagnostic scanner. Audits broken wikilinks, orphan notes, project companion completeness (`Overview`, `Tasks`, `Worklog`, `Decisions`), and frontmatter schemas with auto-remediation. |
+| **[`obsidian-digest`](skills/obsidian-rag/obsidian-digest/SKILL.md)** | `/obsidian-digest` | Automated periodic rollup generator. Consolidates milestones, closed tasks, and ADRs across all active projects into weekly or monthly executive briefing notes. |
 
 ---
 
