@@ -150,16 +150,17 @@ switch ($Command.ToLower()) {
                 $commitSubj = $item.commit.subject
                 $commitDate = if ($item.commit.date) { ([DateTime]$item.commit.date).ToString('yyyy-MM-dd HH:mm') } else { (Get-Date -Format 'yyyy-MM-dd HH:mm') }
                 $keyFiles = ($item.commit.files | Select-Object -First 5) -join ', '
-                $formattedHash = [string]::Format("`{0}`", $commitHash)
+                $formattedHash = [char]96 + $commitHash + [char]96
 
-                $block = @"
-
-### [$commitDate] $commitSubj
-- **Milestone**: 🏁 $commitSubj
-- **Commits (1)**:
-  - $formattedHash - $commitSubj
-- **Key Files**: $keyFiles
-"@
+                $blockLines = @(
+                    ""
+                    "### [$commitDate] $commitSubj"
+                    "- **Milestone**: 🏁 $commitSubj"
+                    "- **Commits (1)**:"
+                    "  - $formattedHash - $commitSubj"
+                    "- **Key Files**: $keyFiles"
+                )
+                $block = ($blockLines -join "`n") + "`n"
                 [System.IO.File]::AppendAllText($fullTarget, $block, [System.Text.Encoding]::UTF8)
                 Write-Host "  [FLUSHED] Milestone $commitHash -> $targetPath" -ForegroundColor Green
                 $flushed++
