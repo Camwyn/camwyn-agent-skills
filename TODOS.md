@@ -12,6 +12,8 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## ✅ Completed
 
+- [x] **Global PARA Map of Content (MOC) & Master Canvas Generator (`obsidian-index`)**
+  - Created dedicated `obsidian-index` skill (`/obsidian-index`) compiling an authoritative master Map of Content (`PARA-Index.md`) and interactive 4-quadrant visual spatial board (`PARA-Index.canvas`) connecting all active `Projects/`, `Areas/` directives, `Resources/` reference playbooks, and `Archives/` across the vault. Scaffolding live master index and canvas in the active vault. *(2026-09-06)*
 - [x] **PARA & BASB (CODE) Default Vault Architecture**
   - Established Tiago Forte's PARA method (*Projects, Areas, Resources, Archives*) and CODE operating cycle (*Capture, Organize, Distill, Express*) as the default organization across the suite. Updated `obsidian-config.json.example`, `obsidian-setup`, `obsidian-rag-grounding`, `obsidian-project-init`, and `rules/obsidian-live-sync.md`. Scaffolding `Areas/`, `Resources/`, and `Archives/` with foundational directive templates while providing legacy fallbacks for existing vaults. *(2026-09-06)*
 - [x] **Multi-Provider Adapter (Local REST API & In-App MCP Connector)**

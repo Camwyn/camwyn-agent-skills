@@ -40,7 +40,9 @@ camwyn-agent-skills/
         │   └── SKILL.md
         ├── obsidian-decision-sync/# Concurrency-safe ADR decision capture
         │   └── SKILL.md
-        └── obsidian-auto-sync/    # Autonomous commit, task, and decision logger
+        ├── obsidian-auto-sync/    # Autonomous commit, task, and decision logger
+        │   └── SKILL.md
+        └── obsidian-index/        # Master PARA Map of Content (MOC) & Canvas generator
             └── SKILL.md
 ```
 
@@ -57,6 +59,7 @@ Bi-directional sync, RAG grounding, and structured Architectural Decision Record
 | **[`obsidian-rag-grounding`](skills/obsidian-rag/obsidian-rag-grounding/SKILL.md)** | `/obsidian-rag` | Ingests project overview, recent ADRs, `Areas/` system guidelines, and `Resources/` references with cascading project overrides to ground creative, UI, and coding tasks. |
 | **[`obsidian-decision-sync`](skills/obsidian-rag/obsidian-decision-sync/SKILL.md)** | `/obsidian-decision` | Formats choices into structured ADRs (*Chosen, Rationale, Rejected Alternatives*) with automated superseding detection and bidirectional links. |
 | **[`obsidian-auto-sync`](skills/obsidian-rag/obsidian-auto-sync/SKILL.md)** | Autonomous / `/obsidian-flush` | Automatically records commits to `Worklog.md` (with 1,000-line milestone rotation), tickets to `Tasks.md`, and ADRs to `Decisions.md` with zero-data-loss replay queue. |
+| **[`obsidian-index`](skills/obsidian-rag/obsidian-index/SKILL.md)** | `/obsidian-index` | Compiles an authoritative master Map of Content (`PARA-Index.md`) and interactive spatial visual board (`PARA-Index.canvas`) across all 4 PARA pillars. |
 
 ---
 
