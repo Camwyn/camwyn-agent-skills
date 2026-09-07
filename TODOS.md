@@ -12,6 +12,8 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## ✅ Completed
 
+- [x] **Standalone CLI / CI Sync Companion (`obsidian-sync`)**
+  - Engineered zero-dependency command-line companion tool (`bin/obsidian-sync.ps1`, `bin/obsidian-sync.cmd`, and `bin/obsidian-sync`) supporting `status` (connectivity, configuration, pending queue, vault note counts), `audit` (link integrity and companion health), `digest` (weekly/monthly rollups), and `flush` (drain pending queue). Integrated automatic deployment into `$HOME/.agents/bin` via `install.ps1` and `install.sh`, added PATH guidance, and documented CI/CD usage in `README.md`. *(2026-09-07)*
 - [x] **Automated Weekly / Monthly Rollup Digest Generator (`obsidian-digest` / `/obsidian-digest`)**
   - Implemented multi-project executive briefing engine consolidating milestones, closed tasks, and architectural decisions (ADRs) across all active codebases into weekly (`YYYY-Www`), monthly (`YYYY-MM`), or custom rolling day-window digests stored in `Areas/00 Camwyn & Co/Digests/`. Added native PowerShell engine (`scripts/generate-digest.ps1`), cross-platform shell wrapper (`scripts/generate-digest.sh`), reactive Dataview recent activity rollups, and `/schedule` automation support. *(2026-09-07)*
 - [x] **Vault Health & Link Integrity Auditor (`obsidian-vault-audit` / `/audit-vault`)**

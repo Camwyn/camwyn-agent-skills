@@ -23,6 +23,11 @@ camwyn-agent-skills/
 ├── install.ps1                    # Master recursive installer
 ├── install.sh                     # Master recursive installer (bash)
 │
+├── bin/                           # Standalone CLI companion tools
+│   ├── obsidian-sync              # POSIX shell CLI launcher
+│   ├── obsidian-sync.cmd          # Windows CMD CLI launcher
+│   └── obsidian-sync.ps1          # Cross-platform PowerShell sync engine
+│
 ├── rules/                         # Autonomous agent behavioral rules
 │   └── obsidian-live-sync.md      # Auto-sync on commits, tasks, and decisions
 │
@@ -127,6 +132,36 @@ If you make commits directly in terminal, VS Code Source Control panel, or GitKr
 1. When you run `git commit`, `.git/hooks/post-commit` runs `scripts/obsidian-post-commit.ps1` (or `scripts/obsidian-post-commit.sh`).
 2. If the commit meets the **Threshold of Significance** (`milestones_only`), it queues the metadata into `.agents/pending-sync.json`.
 3. When your AI agent opens next (or on `/obsidian-flush`), all queued commits are rolled up into `Projects/<ProjectName>/Worklog.md`.
+
+---
+
+### 🖥️ Standalone CLI / CI Sync Companion (`obsidian-sync`)
+
+In addition to interactive agent chat triggers (`/obsidian-flush`, `/audit-vault`, `/obsidian-digest`), the suite includes a standalone, zero-dependency command-line utility in `bin/obsidian-sync` (executable via PowerShell, CMD, or POSIX bash). It is automatically deployed into `~/.agents/bin` by `install.ps1` and `install.sh`.
+
+#### Available Commands:
+```bash
+# Check configuration, connectivity, queue size, and vault statistics
+obsidian-sync status
+
+# Drain pending offline commits from .agents/pending-sync.json into vault Worklogs
+obsidian-sync flush
+
+# Run multi-vector vault diagnostic audit (broken links, orphans, companion notes)
+obsidian-sync audit
+obsidian-sync audit -ScaffoldMissing
+
+# Generate executive periodic rollup digest across all active projects
+obsidian-sync digest -Type weekly
+obsidian-sync digest -Type monthly
+obsidian-sync digest -Days 7 -DryRun
+
+# Display command-line usage reference
+obsidian-sync help
+```
+
+#### CI/CD Pipelines & Background Schedulers
+Because `obsidian-sync` requires zero npm/node runtime dependencies beyond native PowerShell / shell utilities, it can be run directly inside GitHub Actions workflows, pre-push git hooks, or local OS cron jobs to maintain vault health and generate weekly rollups automatically.
 
 ---
 

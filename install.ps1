@@ -3,6 +3,7 @@
 param (
     [string]$TargetDir = "$HOME\.agents\skills",
     [string]$RulesDir = "$HOME\.agents\rules",
+    [string]$BinDir = "$HOME\.agents\bin",
     [switch]$Copy = $false
 )
 
@@ -10,10 +11,14 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "  Camwyn Agent Skills Installer" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "Target Directory : $TargetDir" -ForegroundColor Gray
-Write-Host "Rules Directory  : $RulesDir`n" -ForegroundColor Gray
+Write-Host "Rules Directory  : $RulesDir" -ForegroundColor Gray
+Write-Host "Bin Directory    : $BinDir`n" -ForegroundColor Gray
 
 if (-not (Test-Path $TargetDir)) {
     New-Item -ItemType Directory -Path $TargetDir -Force | Out-Null
+}
+if (-not (Test-Path $BinDir)) {
+    New-Item -ItemType Directory -Path $BinDir -Force | Out-Null
 }
 
 # Find all directories that directly contain a SKILL.md file
@@ -75,6 +80,18 @@ if ((Test-Path $gitHooksDir) -and (Test-Path "$PSScriptRoot\scripts\post-commit"
     Write-Host "  [HOOK]   post-commit -> $hookDest" -ForegroundColor Green
 }
 
+# Install CLI tools into BinDir
+$installedBin = @()
+if (Test-Path "$PSScriptRoot\bin") {
+    $binFiles = Get-ChildItem -Path "$PSScriptRoot\bin" -File
+    foreach ($bin in $binFiles) {
+        $dest = Join-Path $BinDir $bin.Name
+        Copy-Item -Path $bin.FullName -Destination $dest -Force
+        Write-Host "  [CLI]    $($bin.Name) -> $dest" -ForegroundColor Green
+        $installedBin += $bin.Name
+    }
+}
+
 # Install obsidian-config.json if not present
 $configTarget = "$HOME\.agents\obsidian-config.json"
 $configExample = "$PSScriptRoot\skills\obsidian-rag\obsidian-config.json.example"
@@ -83,7 +100,14 @@ if (-not (Test-Path $configTarget) -and (Test-Path $configExample)) {
     Copy-Item -Path $configExample -Destination $configTarget
 }
 
-Write-Host "`nAll skills and rules installed and active!" -ForegroundColor Cyan
+$pathEnv = [System.Environment]::GetEnvironmentVariable("PATH", "User")
+$inPath = $pathEnv -split ';' -contains $BinDir
+
+Write-Host "`nAll skills, rules, and CLI tools installed!" -ForegroundColor Cyan
+if (-not $inPath) {
+    Write-Host "NOTE: To run 'obsidian-sync' from any terminal, add $BinDir to your User PATH:" -ForegroundColor Yellow
+    Write-Host "  [System.Environment]::SetEnvironmentVariable('PATH', `"`$env:PATH;$BinDir`", 'User')`n" -ForegroundColor DarkGray
+}
 Write-Host "Available skills ($($installedSkills.Count)):"
 foreach ($s in ($installedSkills | Sort-Object)) {
     Write-Host "  - /$s" -ForegroundColor White
