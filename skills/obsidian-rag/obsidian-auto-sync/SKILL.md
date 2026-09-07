@@ -24,8 +24,16 @@ Before executing any sync action, read `.agents/obsidian-config.json`:
    - For decisions: verify `auto_sync.on_decision == true`
 3. **Resolve Vault**:
    - Use `default_vault` from `.agents/obsidian-config.json` (e.g. `<VaultName>`).
-4. **Resolve Project Name**:
-   - Use repository name or root folder name (`<ProjectName>`). Target folder is `Projects/<ProjectName>/`.
+4. **Resolve Project Target Path & Worktree Awareness**:
+   - Check if current workspace is a **Git Worktree**:
+     - If `git rev-parse --git-dir` differs from `git-common-dir`:
+       - Target folder: `Projects/<ParentProject>/Worktrees/<branch>/` (or `Projects/<Org>/<ParentProject>/Worktrees/<branch>/`).
+       - Commits log to the branch worktree's `Worklog.md`.
+       - Major architectural decisions link or roll up into parent `Decisions.md`.
+   - Otherwise, resolve standard project path:
+     - If organization nesting is detected/configured: `Projects/<Org>/<ProjectName>/`.
+     - Default: `Projects/<ProjectName>/`.
+   - Set `<TargetProjectPath>` for all subsequent note operations.
 
 ---
 
@@ -33,14 +41,15 @@ Before executing any sync action, read `.agents/obsidian-config.json`:
 
 Whenever writing to `Worklog.md`, `Tasks.md`, or `Decisions.md`:
 
-1. **Check if `Projects/<ProjectName>/Overview.md` exists**:
-   - Call `obsidian_read_note` on `Projects/<ProjectName>/Overview.md`.
+1. **Check if `<TargetProjectPath>/Overview.md` exists**:
+   - Call `obsidian_read_note` on `<TargetProjectPath>/Overview.md`.
    - If missing, bootstrap it via `obsidian-project-init` template.
 2. **Ensure Quick Links Section Contains Target Notes**:
    - Under `## Quick Links`, verify links exist:
-     - `[[Projects/<ProjectName>/Decisions|Decisions Log]]`
-     - `[[Projects/<ProjectName>/Worklog|Worklog]]`
-     - `[[Projects/<ProjectName>/Tasks|Tasks & Backlog]]`
+     - `[[<TargetProjectPath>/Decisions|Decisions Log]]`
+     - `[[<TargetProjectPath>/Worklog|Worklog]]`
+     - `[[<TargetProjectPath>/Tasks|Tasks & Backlog]]`
+     - *(If in a worktree)*: `[[Projects/<ParentProject>/Overview|Parent Project Overview]]`
    - If any link is missing, append it under `## Quick Links` via safe `etag` edit.
 
 ---

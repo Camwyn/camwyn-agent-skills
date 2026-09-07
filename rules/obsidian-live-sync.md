@@ -61,7 +61,8 @@ Every entry in `Worklog.md` represents **strictly one milestone**:
 ## Operational Guardrails
 - **Silent Check**: If `.agents/obsidian-config.json` is absent or `auto_sync.enabled` is `false`, proceed normally with development without failing or interrupting the user.
 - **Missing or Unreachable MCP Server**: If the `obsidian` MCP toolset is not configured or the server is down, do NOT fail or interrupt developer operations; append the payload to `.agents/pending-sync.json` and emit a concise 1-line non-blocking notice.
-- **Dynamic Quick Links**: Ensure `Projects/<ProjectName>/Overview.md` contains links under `## Quick Links` to `Worklog.md`, `Tasks.md`, and `Decisions.md`.
+- **Worktree & Organization Routing**: If the workspace is a git worktree, route commit logs to `Projects/<ParentProject>/Worktrees/<branch>/Worklog.md` and inherit parent project overview/decisions links. If an organization namespace is configured, nest projects under `Projects/<Org>/<Project>/`.
+- **Dynamic Quick Links**: Ensure `<TargetProjectPath>/Overview.md` contains links under `## Quick Links` to `Worklog.md`, `Tasks.md`, and `Decisions.md`.
 - **Concurrency Safety (Zero Data Loss)**:
   - Always read note content and capture `etag` first, editing with `obsidian_edit_note`.
   - On 412 conflicts, execute 3-attempt exponential backoff (500ms, 1500ms).

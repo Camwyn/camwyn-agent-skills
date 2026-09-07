@@ -6,14 +6,14 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## 🛠️ High Priority / Risk Mitigations
 
-- [ ] **Multi-Repo & Git Worktree Mapping (P1)**
-  - *Context*: Connect multi-repo or monorepo subprojects into nested vault knowledge hierarchies (`Projects/<Org>/<Project>/Worktrees/<branch>/Overview.md`).
-  - *Mitigation*: Expand `obsidian-project-init` to detect git worktrees and parent repository directories, creating nested project notes with inherited architecture links.
+*(All high-priority tasks and risk mitigations completed)*
 
 ---
 
 ## ✅ Completed
 
+- [x] **Multi-Repo & Git Worktree Mapping**
+  - Expanded `obsidian-project-init`, `obsidian-auto-sync`, and `rules/obsidian-live-sync.md` to detect git worktrees and organization namespaces, routing commits to worktree-specific notes while preserving parent project architecture and decision links. Added `organization_nesting` and `worktree_support` to configuration schemas. *(2026-09-06)*
 - [x] **Automated ADR Lifecycle**
   - Implemented automated detection of superseded architectural decisions during ADR recording, updating prior ADRs to `Status: Superseded by [[#ADR-ID]]` with bidirectional `Supersedes` backlinks in `obsidian-decision-sync` and `obsidian-auto-sync`. *(2026-09-06)*
 - [x] **Automated Drift Detection & Reconciliation**

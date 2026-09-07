@@ -20,8 +20,18 @@ When triggered:
    - Check `.agents/obsidian-config.json` for `default_vault` (e.g. resolve `<VaultName>`).
    - If unsure, missing, or on error, call `obsidian_list_vaults` to confirm available vaults.
 
-2. **Inspect Current Codebase Context**:
-   - **Project Name**: Base directory name, `name` in `package.json` / `pyproject.toml` / `Cargo.toml`, or git repository name.
+2. **Inspect Current Codebase Context & Workspace Topology**:
+   - **Git Worktree Detection**:
+     - Check if running inside a git worktree (`git rev-parse --git-dir` vs `git rev-parse --git-common-dir`).
+     - If inside a worktree:
+       - Set `is_worktree: true`
+       - Resolve parent repo name and current branch name (`git branch --show-current`).
+       - Canonical project target path: `Projects/<Org>/<ParentProject>/Worktrees/<branch>/` (or `Projects/<ParentProject>/Worktrees/<branch>/`).
+   - **Organization / Multi-Repo Namespace**:
+     - Check git remote URL (e.g. `github.com:<Org>/<Repo>` or `git@...:<Org>/<Repo>.git`).
+     - If `organization_nesting` is enabled in `obsidian-config.json` or an organization is detected:
+       - Prefix path: `Projects/<Org>/<ProjectName>/`
+     - Otherwise, default to flat path: `Projects/<ProjectName>/`.
    - **Tech Stack**: Detected languages, frameworks, major dependencies.
    - **Repo Status**: Git remote URL, current branch, brief summary of repository purpose.
 
@@ -35,14 +45,14 @@ When triggered:
 
 ## 2. Branch A: Project Does NOT Exist in Obsidian (Bootstrap)
 
-If no note matches the project name under `Projects/`:
+If no note matches the project target path under `Projects/`:
 
 1. **Create Project Directory**:
    - Call `obsidian_create_directory`:
      - `vault`: `"<VaultName>"`
-     - `path`: `"Projects/<ProjectName>"`
+     - `path`: `"<TargetProjectPath>"` (e.g. `Projects/<ProjectName>` or `Projects/<Org>/<ProjectName>/Worktrees/<branch>`)
 
-2. **Initialize `Projects/<ProjectName>/Overview.md`**:
+2. **Initialize `<TargetProjectPath>/Overview.md`**:
    - Call `obsidian_create_note` with the following template:
 
 ```markdown

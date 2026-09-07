@@ -114,6 +114,8 @@ Before attempting any vault operations, verify that the `obsidian` MCP toolset i
      {
        "default_vault": "my_vault",
        "projects_dir": "Projects",
+       "organization_nesting": "auto",
+       "worktree_support": true,
        "system_dir": "System",
        "adrs_per_context_limit": 5,
        "auto_sync": {
