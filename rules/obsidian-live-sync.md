@@ -23,6 +23,17 @@ Whenever the agent performs any of the following operations during a coding sess
 
 ---
 
+## Record Ownership (Single Source of Truth)
+
+The Obsidian vault is the single source of truth for every durable or cross-cutting record. A repo may hold a working copy; it is never authoritative.
+
+- **Vault owns (canonical, hand-editable):** `Projects/<ProjectName>/Overview.md`, `Tasks.md`, `Worklog.md`, `Decisions.md`, and everything under `Areas/` — durable backlog, triage items, milestone history, ADRs, audits, dispatches, digests.
+- **Repo owns (transient, non-authoritative):** `.agents/obsidian-config.json` (per-repo config override for this rule — config, not a record), `.agents/pending-sync.json` (local outbox; drains to the vault), and `.scratch/<feature>/` plus in-repo docs like `.ai/` (in-flight spec and roadmap beside the diff). `.scratch/` has a death date: on merge, distill the outcome into a `Worklog.md` milestone plus, if architectural, a `Decisions.md` ADR, then delete or archive it.
+- **Rule of thumb:** if it must still be true in six months, it belongs in the vault; if it is only true until this branch lands, it belongs in `.scratch/`.
+- **Precedence:** where a skill's own instructions say to record something in the repo, that yields to this section for anything in the "Vault owns" list. Skill-local scratch — `investigate` evidence logs, `triage` `.out-of-scope/` KBs, review notes — stays where the skill puts it; those are not durable project records.
+
+---
+
 ## Threshold of Significance & "1 Milestone per Rollup"
 
 To prevent knowledge vault spam, the agent must adhere to strict cognitive filtering:

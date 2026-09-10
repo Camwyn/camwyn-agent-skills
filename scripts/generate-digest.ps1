@@ -4,18 +4,17 @@ param (
     [ValidateSet("Weekly", "Monthly", "Custom")]
     [string]$Period = "Weekly",
     [int]$Days = 7,
-    [string]$OutputDir = "Areas/00 Camwyn & Co/Digests",
+    [string]$OutputDir = "Areas/Digests",
     [switch]$DryRun = $false
 )
 
-# 1. Resolve Vault Path & Config
+# 1. Resolve vault path: -VaultPath arg, then $env:OBSIDIAN_VAULT_PATH, then config `vault_path`.
+if (-not $VaultPath) { $VaultPath = $env:OBSIDIAN_VAULT_PATH }
 $configPath = "$HOME\.agents\obsidian-config.json"
 if (Test-Path $configPath) {
     try {
         $cfg = Get-Content $configPath -Raw | ConvertFrom-Json
-        if (-not $VaultPath -and $cfg.default_vault -eq "camwyn") {
-            $VaultPath = "C:\Users\camwy\Projects\Camwyn"
-        }
+        if (-not $VaultPath -and $cfg.vault_path) { $VaultPath = [string]$cfg.vault_path }
         if ($cfg.digest.output_dir) {
             $OutputDir = $cfg.digest.output_dir
         }
@@ -23,13 +22,8 @@ if (Test-Path $configPath) {
 }
 
 if (-not $VaultPath -or -not (Test-Path $VaultPath)) {
-    $fallback = "C:\Users\camwy\Projects\Camwyn"
-    if (Test-Path $fallback) {
-        $VaultPath = $fallback
-    } else {
-        Write-Error "Vault path not found. Please specify -VaultPath."
-        exit 1
-    }
+    Write-Error "Vault path not found. Set 'vault_path' in ~/.agents/obsidian-config.json, `$env:OBSIDIAN_VAULT_PATH, or pass -VaultPath."
+    exit 1
 }
 
 $vaultRoot = (Get-Item $VaultPath).FullName
@@ -199,7 +193,7 @@ $sb = [System.Text.StringBuilder]::new()
 [void]$sb.AppendLine("")
 [void]$sb.AppendLine("# $digestTitle")
 [void]$sb.AppendLine("")
-[void]$sb.AppendLine("> Comprehensive cross-project executive briefing consolidating engineering progress, milestones, architectural decisions, and task completions across Camwyn & Co.")
+[void]$sb.AppendLine("> Comprehensive cross-project executive briefing consolidating engineering progress, milestones, architectural decisions, and task completions across all active projects.")
 [void]$sb.AppendLine("")
 [void]$sb.AppendLine("---")
 [void]$sb.AppendLine("")

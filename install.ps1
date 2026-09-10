@@ -5,6 +5,7 @@ param (
     [string]$RulesDir = "$HOME\.agents\rules",
     [string]$BinDir = "$HOME\.agents\bin",
     [string]$ScriptsDir = "$HOME\.agents\scripts",
+    [string]$HooksDir = "$HOME\.agents\hooks",
     [switch]$Copy = $false
 )
 
@@ -106,6 +107,20 @@ if (Test-Path "$PSScriptRoot\scripts") {
     }
 }
 
+# Install Claude Code hook adapters into HooksDir
+$installedHooks = @()
+if (Test-Path "$PSScriptRoot\hooks") {
+    if (-not (Test-Path $HooksDir)) {
+        New-Item -ItemType Directory -Path $HooksDir -Force | Out-Null
+    }
+    foreach ($hk in (Get-ChildItem -Path "$PSScriptRoot\hooks" -File)) {
+        $dest = Join-Path $HooksDir $hk.Name
+        Copy-Item -Path $hk.FullName -Destination $dest -Force
+        Write-Host "  [HOOK]   $($hk.Name) -> $dest" -ForegroundColor Green
+        $installedHooks += $hk.Name
+    }
+}
+
 # Install obsidian-config.json if not present
 $configTarget = "$HOME\.agents\obsidian-config.json"
 $configExample = "$PSScriptRoot\skills\obsidian-rag\obsidian-config.json.example"
@@ -134,5 +149,16 @@ if ($installedRules.Count -gt 0) {
     }
 }
 
+if ($installedHooks.Count -gt 0) {
+    Write-Host "Hook adapters ($($installedHooks.Count)) installed to ${HooksDir}:"
+    foreach ($h in ($installedHooks | Sort-Object)) {
+        Write-Host "  - $h" -ForegroundColor White
+    }
+    Write-Host "  Add these to ~/.claude/settings.json to activate them:" -ForegroundColor Yellow
+    Write-Host "    SessionStart      -> $HooksDir\cc-session-start.ps1" -ForegroundColor DarkGray
+    Write-Host "    PostToolUse:Bash  -> $HooksDir\cc-post-bash.ps1" -ForegroundColor DarkGray
+    Write-Host "  (each as a `"type`":`"command`" hook: powershell -NoProfile -ExecutionPolicy Bypass -File `"<path>`")" -ForegroundColor DarkGray
+}
+
 Write-Host "`nNext Step:" -ForegroundColor Cyan
-Write-Host "  Run '/obsidian-setup' in chat to configure your vault, or customize '$configTarget'`n" -ForegroundColor Gray
+Write-Host "  Run '/obsidian-setup' in chat to configure your vault (set 'vault_path'), or customize '$configTarget'`n" -ForegroundColor Gray

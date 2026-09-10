@@ -6,27 +6,21 @@ param (
     [switch]$ScaffoldMissing = $false
 )
 
-# 1. Resolve Vault Path
+# 1. Resolve vault path: -VaultPath arg, then $env:OBSIDIAN_VAULT_PATH, then config `vault_path`.
+if (-not $VaultPath) { $VaultPath = $env:OBSIDIAN_VAULT_PATH }
 if (-not $VaultPath) {
     $configPath = "$HOME\.agents\obsidian-config.json"
     if (Test-Path $configPath) {
         try {
             $cfg = Get-Content $configPath -Raw | ConvertFrom-Json
-            if ($cfg.default_vault -eq "camwyn") {
-                $VaultPath = "C:\Users\camwy\Projects\Camwyn"
-            }
+            if ($cfg.vault_path) { $VaultPath = [string]$cfg.vault_path }
         } catch {}
     }
 }
 
 if (-not $VaultPath -or -not (Test-Path $VaultPath)) {
-    $fallback = "C:\Users\camwy\Projects\Camwyn"
-    if (Test-Path $fallback) {
-        $VaultPath = $fallback
-    } else {
-        Write-Error "Vault path not found. Please specify -VaultPath."
-        exit 1
-    }
+    Write-Error "Vault path not found. Set 'vault_path' in ~/.agents/obsidian-config.json, `$env:OBSIDIAN_VAULT_PATH, or pass -VaultPath."
+    exit 1
 }
 
 $vaultRoot = (Get-Item $VaultPath).FullName

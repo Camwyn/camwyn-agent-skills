@@ -18,7 +18,7 @@ Analyzes historical telemetry across all conversations and workspaces in the Ant
 When invoked:
 
 1. **Locate Installed Skills**:
-   - Inspect workspace skills: `c:\Users\camwy\.agents\skills\`
+   - Inspect workspace skills: `~/.agents/skills/`
    - Inspect global skills: `~/.gemini/config/skills/` and `~/.gemini/config/plugins/*/skills/`
    - Inspect built-in skills: `~/.gemini/antigravity-ide/builtin/skills/`
 

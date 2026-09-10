@@ -21,8 +21,19 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $rootDir = Split-Path -Parent $scriptDir
 $configPath = "$HOME\.agents\obsidian-config.json"
 
-# Resolve Vault Path
-$vaultPath = $null
+# Resolve the pending-sync queue from the CALLER's context, not this script's
+# install dir. Priority: explicit path arg > current git repo root > current dir.
+$queueRoot = $null
+if ($RemainingArgs -and $RemainingArgs.Count -ge 1 -and $RemainingArgs[0] -and ($RemainingArgs[0] -notmatch '^-') -and (Test-Path -LiteralPath $RemainingArgs[0])) {
+    $queueRoot = (Resolve-Path -LiteralPath $RemainingArgs[0]).Path
+} else {
+    $gitRoot = (git rev-parse --show-toplevel 2>$null)
+    $queueRoot = if ($gitRoot) { $gitRoot } else { (Get-Location).Path }
+}
+$queuePath = Join-Path $queueRoot ".agents\pending-sync.json"
+
+# Resolve vault path: $env:OBSIDIAN_VAULT_PATH, then config `vault_path`.
+$vaultPath = $env:OBSIDIAN_VAULT_PATH
 $defaultVault = $null
 $provider = "auto"
 
@@ -31,18 +42,11 @@ if (Test-Path $configPath) {
         $cfg = Get-Content $configPath -Raw | ConvertFrom-Json
         $provider = if ($cfg.provider) { $cfg.provider } else { "auto" }
         $defaultVault = $cfg.default_vault
-        if ($defaultVault -eq "camwyn") {
-            $vaultPath = "C:\Users\camwy\Projects\Camwyn"
-        }
+        if (-not $vaultPath -and $cfg.vault_path) { $vaultPath = [string]$cfg.vault_path }
     } catch {}
 }
 
-if (-not $vaultPath -or -not (Test-Path $vaultPath)) {
-    $fallback = "C:\Users\camwy\Projects\Camwyn"
-    if (Test-Path $fallback) {
-        $vaultPath = $fallback
-    }
-}
+if ($vaultPath -and -not (Test-Path $vaultPath)) { $vaultPath = $null }
 
 function Show-Banner {
     Write-Host "============================================================" -ForegroundColor Cyan
@@ -78,7 +82,7 @@ switch ($Command.ToLower()) {
         Write-Host "  Provider Mode  : $provider" -ForegroundColor Gray
         
         # Check Pending Queue
-        $queueFile = Join-Path $rootDir ".agents\pending-sync.json"
+        $queueFile = $queuePath
         $queueCount = 0
         if (Test-Path $queueFile) {
             try {
@@ -122,7 +126,7 @@ switch ($Command.ToLower()) {
 
     "flush" {
         Show-Banner
-        $queueFile = Join-Path $rootDir ".agents\pending-sync.json"
+        $queueFile = $queuePath
         if (-not (Test-Path $queueFile)) {
             Write-Host "No pending sync queue found at $queueFile." -ForegroundColor Yellow
             exit 0
@@ -151,11 +155,12 @@ switch ($Command.ToLower()) {
                 $commitDate = if ($item.commit.date) { ([DateTime]$item.commit.date).ToString('yyyy-MM-dd HH:mm') } else { (Get-Date -Format 'yyyy-MM-dd HH:mm') }
                 $keyFiles = ($item.commit.files | Select-Object -First 5) -join ', '
                 $formattedHash = [char]96 + $commitHash + [char]96
+                $flag = [char]::ConvertFromUtf32(0x1F3C1)  # build non-ASCII from codepoint; script parses as ANSI under PS 5.1
 
                 $blockLines = @(
                     ""
                     "### [$commitDate] $commitSubj"
-                    "- **Milestone**: 🏁 $commitSubj"
+                    "- **Milestone**: $flag $commitSubj"
                     "- **Commits (1)**:"
                     "  - $formattedHash - $commitSubj"
                     "- **Key Files**: $keyFiles"

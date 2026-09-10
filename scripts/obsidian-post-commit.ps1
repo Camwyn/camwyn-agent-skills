@@ -24,6 +24,14 @@ try {
     $config = ConvertFrom-Json -InputObject $rawConfig -ErrorAction SilentlyContinue
     if (-not $config) { exit 0 }
 
+    # Map repo folder name -> canonical vault project folder (config: project_aliases).
+    # Use when the repo folder name differs from the vault project name (nested repos,
+    # monorepo subprojects, or a renamed repo) so commits don't spawn a divergent folder.
+    if ($config.project_aliases) {
+        $alias = $config.project_aliases.PSObject.Properties | Where-Object { $_.Name -eq $projectName } | Select-Object -First 1
+        if ($alias -and $alias.Value) { $projectName = [string]$alias.Value }
+    }
+
     if (-not $config.auto_sync -or -not $config.auto_sync.enabled -or -not $config.auto_sync.on_commit) {
         exit 0
     }

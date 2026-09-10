@@ -13,6 +13,14 @@ if [ ! -f "$CONFIG_FILE" ]; then
 fi
 [ ! -f "$CONFIG_FILE" ] && exit 0
 
+# Map repo folder name -> canonical vault project folder (config: project_aliases).
+# Use when the repo folder name differs from the vault project name (nested repos,
+# monorepo subprojects, or a renamed repo) so commits don't spawn a divergent folder.
+if command -v jq >/dev/null 2>&1; then
+    ALIASED="$(jq -r --arg p "$PROJECT_NAME" '.project_aliases[$p] // empty' "$CONFIG_FILE" 2>/dev/null)"
+    [ -n "$ALIASED" ] && PROJECT_NAME="$ALIASED"
+fi
+
 # Check commit info
 COMMIT_HASH="$(git rev-parse --short HEAD 2>/dev/null)"
 COMMIT_SUBJECT="$(git log -1 --format="%s" 2>/dev/null)"

@@ -24,15 +24,19 @@
     "archives_dir": "Archives"
   },
   "default_vault": "my_vault",
+  "vault_path": "/absolute/path/to/your/Obsidian/vault",
   "organization_nesting": "auto",
   "worktree_support": true,
+  "project_aliases": {
+    "repo-folder-name": "vault-project-folder-name"
+  },
   "adrs_per_context_limit": 5,
   "dataview": {
     "enabled": true,
     "render_dynamic_queries": true
   },
   "digest": {
-    "output_dir": "Areas/00 Camwyn & Co/Digests",
+    "output_dir": "Areas/Digests",
     "default_period": "weekly",
     "include_git_commits": true
   },
@@ -41,11 +45,17 @@
     "on_commit": true,
     "on_decision": true,
     "on_todo": true,
+    "flush_on_session_start": true,
     "filters": {
       "commit_level": "milestones_only",
       "rollup_window_hours": 2
     },
     "worklog_archive_limit_lines": 1000
+  },
+  "site_audit": {
+    "reports_dir": "Areas/Audits",
+    "cadence_days": 7,
+    "sites": []
   },
   "global_notes": {
     "tone_and_voice": "Areas/Tone and Voice.md",

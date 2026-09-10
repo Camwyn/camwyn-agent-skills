@@ -131,7 +131,7 @@ Before attempting any vault operations, detect available communication providers
    - **MCP**: Call `obsidian_list_vaults` to discover all mounted vault IDs.
    - **Local REST API**: Query `/` to confirm the connected active vault.
 3. **Confirm Default Vault**:
-   - Prompt the user to select or confirm the primary vault (e.g., `personal_vault` or `camwyn`).
+   - Prompt the user to select or confirm the primary vault (e.g., `personal` or `work`).
 4. **Persist Configuration**:
    - Save or update `.agents/obsidian-config.json`:
      ```json

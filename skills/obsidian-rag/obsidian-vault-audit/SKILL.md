@@ -113,8 +113,8 @@ Format the user-facing diagnostic report cleanly:
 ### 📁 Project Companion Status
 | Project Directory | Status | Missing Notes |
 |---|---|---|
-| `Projects/camwyn-agent-skills` | ✅ Complete | None |
-| `Projects/manyhats-ledger` | ✅ Complete | None |
+| `Projects/project-alpha` | ✅ Complete | None |
+| `Projects/project-beta` | ⚠️ Incomplete | `Decisions.md` |
 
 ---
 

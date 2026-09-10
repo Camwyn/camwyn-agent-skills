@@ -4,6 +4,8 @@ set -e
 TARGET_DIR="${1:-$HOME/.agents/skills}"
 RULES_DIR="${2:-$HOME/.agents/rules}"
 BIN_DIR="${3:-$HOME/.agents/bin}"
+SCRIPTS_DIR="${4:-$HOME/.agents/scripts}"
+HOOKS_DIR="${5:-$HOME/.agents/hooks}"
 
 echo "========================================"
 echo "  Camwyn Agent Skills Installer"
@@ -53,6 +55,28 @@ if [ -d "$SCRIPT_DIR/bin" ]; then
     chmod +x "$BIN_DIR/$bin_name" 2>/dev/null || true
     echo "  [CLI]  $bin_name -> $BIN_DIR/$bin_name"
   done
+fi
+
+# Install supporting scripts
+if [ -d "$SCRIPT_DIR/scripts" ]; then
+  mkdir -p "$SCRIPTS_DIR"
+  for sf in "$SCRIPT_DIR/scripts"/*; do
+    [ -f "$sf" ] || continue
+    cp "$sf" "$SCRIPTS_DIR/$(basename "$sf")"
+    echo "  [SCRIPT] $(basename "$sf") -> $SCRIPTS_DIR/$(basename "$sf")"
+  done
+fi
+
+# Install Claude Code hook adapters
+if [ -d "$SCRIPT_DIR/hooks" ]; then
+  mkdir -p "$HOOKS_DIR"
+  for hk in "$SCRIPT_DIR/hooks"/*; do
+    [ -f "$hk" ] || continue
+    cp "$hk" "$HOOKS_DIR/$(basename "$hk")"
+    echo "  [HOOK]  $(basename "$hk") -> $HOOKS_DIR/$(basename "$hk")"
+  done
+  echo "  NOTE: add cc-session-start.ps1 (SessionStart) and cc-post-bash.ps1 (PostToolUse:Bash)"
+  echo "        to ~/.claude/settings.json as \"type\":\"command\" hooks to activate them."
 fi
 
 CONFIG_TARGET="$HOME/.agents/obsidian-config.json"

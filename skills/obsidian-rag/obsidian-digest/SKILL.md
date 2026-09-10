@@ -24,7 +24,7 @@ Trigger `/obsidian-digest` when:
 
 ## 2. Digest Structure
 
-Each generated digest is written to `Areas/00 Camwyn & Co/Digests/Digest-<ID>.md` (or the configured `digest.output_dir`) and includes:
+Each generated digest is written to `Areas/Digests/Digest-<ID>.md` (or the configured `digest.output_dir`) and includes:
 
 1. **YAML Frontmatter**:
    - `pillar: area`
@@ -86,7 +86,7 @@ Configure default digest behavior in `~/.agents/obsidian-config.json`:
 ```json
 {
   "digest": {
-    "output_dir": "Areas/00 Camwyn & Co/Digests",
+    "output_dir": "Areas/Digests",
     "default_period": "weekly",
     "include_git_commits": true
   }
