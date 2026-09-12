@@ -3,8 +3,9 @@ name: obsidian-vault-audit
 description: >
   Autonomous diagnostic health and link integrity audit for Obsidian vaults.
   Scans for broken wikilinks, orphan notes, missing project companion notes
-  (Overview, Tasks, Worklog, Decisions), and frontmatter schema violations with
-  automated remediation. Trigger with '/audit-vault', 'audit vault', or 'vault health'.
+  (Overview, Tasks, Worklog, Decisions), frontmatter schema violations, and drifted
+  content mirrors (declared repo/vault duplicate pairs) with automated remediation.
+  Trigger with '/audit-vault', 'audit vault', or 'vault health'.
 ---
 
 # Obsidian Vault Health & Link Integrity Auditor
@@ -26,7 +27,7 @@ Activate `/audit-vault` when:
 
 ## 2. Multi-Vector Diagnostics
 
-The auditor evaluates six distinct dimensions:
+The auditor evaluates seven distinct dimensions:
 
 | Vector | Diagnostic Focus | Threshold / Standard |
 | :--- | :--- | :--- |
@@ -36,6 +37,24 @@ The auditor evaluates six distinct dimensions:
 | **Orphan Notes** | Notes with 0 incoming backlinks | Flags unindexed leaves not referenced in any MOC |
 | **Stub Notes** | Empty or near-empty notes (<30 characters) | Flags forgotten placeholders or zero-byte files |
 | **Frontmatter Compliance** | Missing YAML blocks or required fields | Checks `pillar`, `status`, `tags`, and timestamps |
+| **Mirror Drift** | Declared `mirror:` pairs (see `rules/content-mirror-sync.md`) that are one-sided, unreachable, or diverged | Both sides must declare each other and agree substantively |
+
+### Mirror Drift — How It's Checked
+This vector is agent-driven, not part of `audit-vault.ps1`/`.sh` (those scripts only see the
+vault filesystem; the repo side of a mirror lives elsewhere on disk, sometimes on a different
+machine entirely, so a generic script can't resolve it reliably):
+1. Search the vault for every note with a `mirror.repo` + `mirror.path` frontmatter pair.
+2. For each, check whether the named repo is reachable in this session (open, or resolvable
+   from a known local project path). If not reachable, report it as **Unverifiable** rather
+   than **Drifted** — absence of evidence isn't evidence of drift.
+3. If reachable, read the repo file and check whether it declares the matching `mirror.vault`
+   back — flag a **one-sided declaration** if not.
+4. Diff the two for *substantive* content divergence, not formatting differences that are
+   expected per `content-mirror-sync.md` (frontmatter shape, link syntax, an added H1/excerpt).
+   Flag pairs whose actual content has diverged as **Drifted**, and suggest `/obsidian-mirror`
+   to reconcile.
+5. Never remediate a drifted mirror automatically — always report it and let the user (or a
+   follow-up `/obsidian-mirror` run) decide the direction of the fix.
 
 ---
 
@@ -82,6 +101,10 @@ $$\text{Health Score} = \max(0, 100 - (2 \times \text{BrokenLinks}) - (5 \times 
 - 🟡 **75 - 89%**: **GOOD** — Minor link gaps or unlinked notes, but core structure is intact.
 - 🔴 **< 75%**: **ATTENTION NEEDED** — Significant broken links or missing project companion notes require remediation.
 
+Mirror Drift findings are reported separately, not folded into this score — they depend on
+what's reachable in the current session, not a fixed vault-wide fact the way the other six
+vectors are.
+
 ---
 
 ## 5. Report Template
@@ -118,10 +141,18 @@ Format the user-facing diagnostic report cleanly:
 
 ---
 
+### 🪞 Mirror Drift
+*(Omitted if no declared mirrors, or none found drifted/unreachable)*
+| Vault Note | Repo Mirror | Status |
+|---|---|---|
+| `Areas/.../The Headless Brain....md` | `camwyn-and-co/src/notes/the-headless-brain.md` | ⚠️ Drifted — run `/obsidian-mirror` |
+| `Areas/.../Some Other Note.md` | `some-repo/docs/x.md` | ℹ️ Unverifiable — repo not open this session |
+
 ### 💡 Remediation Guidance
 1. **Auto-Scaffold Missing Companions**: Run `/audit-vault --fix-companions` to generate missing templates.
 2. **Fix Renamed Wikilinks**: Update old target stems in affected notes.
 3. **Index Orphan Notes**: Add unlinked notes into the appropriate Area MOC or `PARA-Index.md`.
+4. **Reconcile Drifted Mirrors**: Run `/obsidian-mirror` on each flagged pair.
 ```
 
 ---

@@ -29,7 +29,8 @@ camwyn-agent-skills/
 │   └── obsidian-sync.ps1          # Cross-platform PowerShell sync engine
 │
 ├── rules/                         # Autonomous agent behavioral rules
-│   └── obsidian-live-sync.md      # Auto-sync on commits, tasks, and decisions
+│   ├── obsidian-live-sync.md      # Auto-sync on commits, tasks, and decisions
+│   └── content-mirror-sync.md     # Keep declared repo<->vault content mirrors from drifting
 │
 ├── hooks/                         # Claude Code hook adapters (wire into ~/.claude/settings.json)
 │   ├── cc-session-start.ps1       # SessionStart: briefing + auto-drain the live-sync queue
@@ -46,6 +47,8 @@ camwyn-agent-skills/
     │
     └── obsidian-rag/              # Unified Obsidian Suite
         ├── obsidian-config.json.example
+        ├── templates/
+        │   └── AI-CONTEXT.md.example  # The AI Constitution: voice, banned vocabulary, guardrails
         ├── obsidian-setup/        # Onboarding wizard & vault configuration
         │   └── SKILL.md
         ├── obsidian-project-init/ # Project scanner & note bootstrapper
@@ -58,7 +61,9 @@ camwyn-agent-skills/
         │   └── SKILL.md
         ├── obsidian-index/        # Master PARA Map of Content (MOC) & Canvas generator
         │   └── SKILL.md
-        ├── obsidian-vault-audit/  # Vault health & link integrity diagnostic auditor
+        ├── obsidian-vault-audit/  # Vault health, link integrity & mirror-drift diagnostic auditor
+        │   └── SKILL.md
+        ├── obsidian-mirror/       # Establish/re-sync a repo<->vault content mirror pair
         │   └── SKILL.md
         └── obsidian-digest/       # Automated weekly/monthly executive rollup generator
             └── SKILL.md
@@ -78,10 +83,30 @@ Bi-directional sync, RAG grounding, and structured Architectural Decision Record
 | **[`obsidian-decision-sync`](skills/obsidian-rag/obsidian-decision-sync/SKILL.md)** | `/obsidian-decision` | Formats choices into structured ADRs (*Chosen, Rationale, Rejected Alternatives*) with automated superseding detection and bidirectional links. |
 | **[`obsidian-auto-sync`](skills/obsidian-rag/obsidian-auto-sync/SKILL.md)** | Autonomous / `/obsidian-flush` | Automatically records commits to `Worklog.md` (with 1,000-line milestone rotation), tickets to `Tasks.md`, and ADRs to `Decisions.md` with zero-data-loss replay queue. |
 | **[`obsidian-index`](skills/obsidian-rag/obsidian-index/SKILL.md)** | `/obsidian-index` | Compiles an authoritative master Map of Content (`PARA-Index.md`) and interactive spatial visual board (`PARA-Index.canvas`) across all 4 PARA pillars. |
-| **[`obsidian-vault-audit`](skills/obsidian-rag/obsidian-vault-audit/SKILL.md)** | `/audit-vault` | Multi-vector diagnostic scanner. Audits broken wikilinks, orphan notes, project companion completeness (`Overview`, `Tasks`, `Worklog`, `Decisions`), and frontmatter schemas with auto-remediation. |
+| **[`obsidian-vault-audit`](skills/obsidian-rag/obsidian-vault-audit/SKILL.md)** | `/audit-vault` | Multi-vector diagnostic scanner. Audits broken wikilinks, orphan notes, project companion completeness (`Overview`, `Tasks`, `Worklog`, `Decisions`), frontmatter schemas, and drifted content mirrors, with auto-remediation. |
+| **[`obsidian-mirror`](skills/obsidian-rag/obsidian-mirror/SKILL.md)** | `/obsidian-mirror` | Establishes or re-syncs a declared repo↔vault content mirror — two full, independent, kept-in-sync copies (e.g. a blog post and its vault dispatch), not a canonical-plus-stub pair. |
 | **[`obsidian-digest`](skills/obsidian-rag/obsidian-digest/SKILL.md)** | `/obsidian-digest` | Automated periodic rollup generator. Consolidates milestones, closed tasks, and ADRs across all active projects into weekly or monthly executive briefing notes. |
 
 ---
+
+### 🧭 The AI Constitution (`AI-CONTEXT.md`)
+
+At the root of your vault sits one short note every downstream skill reads first —
+`obsidian-rag-grounding` treats it as authoritative before it starts cascading through
+`Areas/`. It carries the operating thesis, banned vocabulary, editorial archetypes, and
+operational guardrails in a single fact-dense file, so voice and guardrail drift can't hide
+behind five separate lookups. Bootstrap it via `/obsidian-setup` from
+`skills/obsidian-rag/templates/AI-CONTEXT.md.example`.
+
+### 🪶 Visual Boards Are Opt-In (`visual_boards`)
+
+Canvas boards and Mermaid diagrams are useful only to someone who opens Obsidian to look at
+them — an agent reading a note over MCP gets zero value from JSON it can't render or a diagram
+it can't see, and pays full token price for it on every read. `visual_boards.enabled` in
+`.agents/obsidian-config.json` controls whether `obsidian-project-init` and `obsidian-index`
+generate `Dashboard.canvas` / `PARA-Index.canvas` / Mermaid subsystem diagrams at all. New
+vaults default to `false`; flip it to `true` if you (or a teammate) actually work inside the
+Obsidian app and want the visual layer.
 
 ### 🏛️ The PARA & BASB (CODE) Architecture
 
