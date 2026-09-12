@@ -6,7 +6,10 @@ Active task ledger derived from Council risk assessment and product roadmap.
 
 ## 🛠️ High Priority / Risk Mitigations
 
-*(All high-priority tasks and risk mitigations completed)*
+- [ ] **Inbox content understanding (voice memos, images)** — `obsidian-status`/Inbox Backlog
+  currently detect and flag non-markdown captures (age, staleness) but never open them. Next
+  step: transcribe voice memos, describe/OCR images, and use that to propose a filing
+  destination instead of asking the human to identify an unread file blind.
 
 ---
 
