@@ -160,7 +160,7 @@ Before attempting any vault operations, detect available communication providers
            "description": "In-app Obsidian community plugin (obsidian-mcp-plugin) exposing MCP tools"
          }
        },
-       "default_vault": "my_vault",
+       "default_vault": "main",
        "organization_nesting": "auto",
        "worktree_support": true,
        "adrs_per_context_limit": 5,
@@ -302,6 +302,30 @@ tags: [resource, cheatsheets, references, para/resources]
 
 Shared reference materials, API contracts, prompt packs, and technical cheatsheets accessible across all projects.
 ```
+
+---
+
+## 3.5 The AI Constitution (`AI CONTEXT.md`)
+
+Check for `<vault_root>/<ai_context.path>` (default `AI CONTEXT.md` at vault root — this must
+match whatever filename `obsidian-rag-grounding` actually looks for; don't let the two drift).
+This
+is the one note every downstream skill (`obsidian-rag-grounding` first and foremost) reads
+before anything else — voice thesis, banned vocabulary, archetype rules, and non-negotiable
+operational guardrails, all in one short file.
+
+If missing, offer to bootstrap it from `skills/obsidian-rag/templates/AI-CONTEXT.md.example`.
+Do not fill in the placeholders yourself — ask the user for their operating thesis, banned
+words, and archetypes, or leave them as visible `<placeholder>` text for them to fill in later.
+
+### Visual Boards: Default Off
+Ask the user directly: *"Generate Canvas boards and Mermaid diagrams for every project
+(visual, but only useful when someone opens Obsidian), or keep notes plain-text only (leaner
+for agents, matches a headless workflow)?"* Persist the answer to `visual_boards.enabled`.
+Default to `false` for new vaults — a plain-text `Overview.md` is what every agent actually
+reads on every grounding call; Canvas/Mermaid ceremony is opt-in polish for humans who do open
+the app. An existing vault with `Dashboard.canvas` files already in place may prefer `true` to
+avoid orphaning them — ask rather than assume.
 
 ---
 

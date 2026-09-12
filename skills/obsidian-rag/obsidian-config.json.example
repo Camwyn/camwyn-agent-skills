@@ -23,7 +23,7 @@
     "resources_dir": "Resources",
     "archives_dir": "Archives"
   },
-  "default_vault": "my_vault",
+  "default_vault": "main",
   "vault_path": "/absolute/path/to/your/Obsidian/vault",
   "organization_nesting": "auto",
   "worktree_support": true,
@@ -31,6 +31,15 @@
     "repo-folder-name": "vault-project-folder-name"
   },
   "adrs_per_context_limit": 5,
+  "ai_context": {
+    "enabled": true,
+    "path": "AI CONTEXT.md"
+  },
+  "visual_boards": {
+    "enabled": false,
+    "generate_canvas": false,
+    "generate_mermaid": false
+  },
   "dataview": {
     "enabled": true,
     "render_dynamic_queries": true

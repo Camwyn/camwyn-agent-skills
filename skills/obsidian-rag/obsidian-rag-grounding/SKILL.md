@@ -22,9 +22,23 @@ Run this skill:
 
 ---
 
-## 2. Cascading Retrieval Engine (Project Override > Areas Default > Resources)
+## 2. Step 0: Read the AI Constitution First
 
-When resolving directives (Voice & Tone, Design Tokens, Architecture Standards), evaluate using a cascading priority based on **PARA**:
+Before any cascading lookup, read the vault's constitution note once per session (cache it —
+don't re-fetch on every subsequent grounding call this session unless the etag changes):
+
+- Path: `ai_context.path` in `.agents/obsidian-config.json` (default `AI-CONTEXT.md` at vault root).
+- If `ai_context.enabled` is `false` or the note doesn't exist, skip silently — don't block or
+  suggest bootstrapping unless the user asks.
+- This one note carries voice thesis, banned vocabulary, archetype switching rules, and
+  operational guardrails (including whether visual boards are allowed). It replaces, not
+  supplements, a separate "Voice & Tone" lookup when both exist and agree — only fall through
+  to the cascade below for anything the constitution doesn't cover or for project-specific
+  overrides.
+
+## 3. Cascading Retrieval Engine (Project Override > Areas Default > Resources)
+
+For anything not already settled by `AI-CONTEXT.md`, resolve directives (Voice & Tone, Design Tokens, Architecture Standards) using a cascading priority based on **PARA**:
 
 ```
 [ Step 1: Check Project-Specific Note / Section ] ──(Found?)──> Use Project Override
@@ -58,7 +72,7 @@ When resolving directives (Voice & Tone, Design Tokens, Architecture Standards),
 
 ---
 
-## 3. Grounding Context Emission
+## 4. Grounding Context Emission
 
 Synthesize the resolved directives and output a clear, structured **Grounding Brief** into the active context before proceeding:
 
@@ -80,7 +94,7 @@ Synthesize the resolved directives and output a clear, structured **Grounding Br
 
 ---
 
-## 4. Execution Guidance
+## 5. Execution Guidance
 
 Once grounded:
 - **Enforce Effective Directives**: Strictly follow the resolved voice, design, and architecture rules (prioritizing project overrides).
@@ -88,7 +102,7 @@ Once grounded:
 
 ---
 
-## 5. Fallback & Graceful Degradation
+## 6. Fallback & Graceful Degradation
 
 - If the `obsidian` MCP toolset is missing or unreachable:
   - Do NOT crash, error out, or halt the conversation.

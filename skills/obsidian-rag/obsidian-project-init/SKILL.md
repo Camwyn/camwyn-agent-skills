@@ -53,8 +53,9 @@ If no note matches the project target path under `Projects/`:
      - `vault`: `"<VaultName>"`
      - `path`: `"<TargetProjectPath>"` (e.g. `Projects/<ProjectName>` or `Projects/<Org>/<ProjectName>/Worktrees/<branch>`)
 
-2. **Initialize `<TargetProjectPath>/Overview.md`**:
-   - Call `obsidian_create_note` with the following template:
+2. **Initialize `<TargetProjectPath>/Overview.md`** — this is the note every agent re-reads on
+   every grounding call, so keep it plain-text and fact-dense. Nothing in it should require
+   Obsidian's renderer to be useful:
 
 ```markdown
 ---
@@ -85,39 +86,28 @@ tags:
 - **Key Subsystems**:
   - `src/...`: <Brief role>
 
-### Subsystem Architecture Diagram
-```mermaid
-graph TD
-  Root["<ProjectName>"]
-  Sub1["<Subsystem 1>"]
-  Sub2["<Subsystem 2>"]
-  Root --> Sub1
-  Root --> Sub2
-```
-
 ## Voice, Tone & Design Principles
 - **Tone & Voice**: <Key tone rules for UI/copy (overrides global `Areas/Tone and Voice.md` if specified)>
 - **Design Tokens**: <Key styling/design system rules (overrides global `Areas/Design Tokens.md` if specified)>
 
 ## Quick Links
 - Repository: `<RepoPath>`
-- Visual Board: [[<TargetProjectPath>/Dashboard.canvas|Visual Project Canvas]]
 - Decisions: [[<TargetProjectPath>/Decisions|Decisions Log]]
 - Worklog: [[<TargetProjectPath>/Worklog|Worklog]]
 - Tasks: [[<TargetProjectPath>/Tasks|Tasks & Backlog]]
 - Optional Project Overrides:
   - [[<TargetProjectPath>/Tone and Voice|Custom Voice & Tone]] *(if overriding global)*
   - [[<TargetProjectPath>/Design Tokens|Custom Design Tokens]] *(if overriding global)*
-
-## 📊 Live Project Queries (Dataview)
-*(Renders reactive live tables when the Obsidian Dataview plugin is installed)*
-
-```dataview
-TASK
-FROM "<TargetProjectPath>"
-WHERE !completed
 ```
-```
+
+   Only add a `Visual Board:` quick link and a `## 📊 Live Project Queries (Dataview)` block
+   if `dataview.enabled` is true; only add the Mermaid subsystem diagram and the
+   `Dashboard.canvas` companion (step 4 below) if `visual_boards.enabled` is true in
+   `.agents/obsidian-config.json`. Treat the key as `true` if the config predates this option
+   (don't silently strip Canvas boards from a vault that already relies on them) but default
+   new vaults to `false` per `obsidian-setup`. These are human-in-Obsidian conveniences —
+   an agent reading this note over MCP gets no value from a diagram it can't render, so don't
+   spend the tokens on it unless someone will actually open the app to look.
 
 3. **Initialize `<TargetProjectPath>/Decisions.md`**:
    - Call `obsidian_create_note`:
@@ -139,7 +129,9 @@ This log records significant architectural, voice, styling, and structural choic
 ---
 ```
 
-4. **Initialize Visual Dashboard Canvas (`<TargetProjectPath>/Dashboard.canvas`)**:
+4. **Initialize Visual Dashboard Canvas (`<TargetProjectPath>/Dashboard.canvas`)** — only if
+   `visual_boards.enabled` (or `visual_boards.generate_canvas`) is `true`; skip this step
+   entirely otherwise and don't link to a canvas that doesn't exist:
    - Call `obsidian_create_note`:
      - `vault`: `"<VaultName>"`
      - `path`: `"<TargetProjectPath>/Dashboard.canvas"`
@@ -161,10 +153,11 @@ This log records significant architectural, voice, styling, and structural choic
        ```
 
 5. **Confirm to User**:
-   - Emit a clean summary of newly created Obsidian notes and canvas board:
-     - `<TargetProjectPath>/Overview.md` (with interactive Mermaid subsystem map)
+   - Emit a clean summary of newly created Obsidian notes (list `Dashboard.canvas` only if it
+     was actually created per step 4):
+     - `<TargetProjectPath>/Overview.md`
      - `<TargetProjectPath>/Decisions.md`
-     - `<TargetProjectPath>/Dashboard.canvas` (interactive visual workspace)
+     - `<TargetProjectPath>/Dashboard.canvas` *(only when `visual_boards.enabled` is true)*
 
 ---
 
@@ -193,9 +186,11 @@ If a matching project note is found (e.g. `Projects/<ProjectName>/Overview.md` o
        - `Decisions.md` (ADR log)
        - `Worklog.md` (Engineering worklog)
        - `Tasks.md` (Tasks and backlog ledger)
-       - `Dashboard.canvas` (Interactive visual workspace)
+       - `Dashboard.canvas` (Interactive visual workspace) — **only if `visual_boards.enabled`
+         is true**; if it's false, a missing canvas is expected, not drift.
      - Check `## Quick Links` in `Overview.md`.
-     - Detect: missing companion notes, missing `Dashboard.canvas`, or missing wiki-links `[[<TargetProjectPath>/...]]`.
+     - Detect: missing companion notes, or missing wiki-links `[[<TargetProjectPath>/...]]`;
+       flag a missing `Dashboard.canvas` only when `visual_boards.enabled` is true.
 
    - **Vector 4: Repository & Git State**:
      - Compare current git branch, remote URL (`git remote get-url origin`), and workspace path against frontmatter `repo_path` and status.
@@ -219,9 +214,12 @@ If a matching project note is found (e.g. `Projects/<ProjectName>/Overview.md` o
 
    - **Option 1: Surgical Non-Destructive Reconciliation (Recommended)**:
      - Surgically update `tech_stack` in YAML frontmatter.
-     - Update or append new subsystems under `## Architecture & Tech Stack` and refresh Mermaid diagram.
-     - Ensure `<TargetProjectPath>/Dashboard.canvas` exists (bootstrap if missing).
-     - Populate missing wiki-links under `## Quick Links` to point to `Dashboard.canvas`, `Decisions.md`, `Worklog.md`, and `Tasks.md`.
+     - Update or append new subsystems under `## Architecture & Tech Stack` (and refresh the
+       Mermaid diagram only if one is already present — don't add one that wasn't there).
+     - If `visual_boards.enabled` is true, ensure `<TargetProjectPath>/Dashboard.canvas` exists
+       (bootstrap if missing); if false, leave it absent.
+     - Populate missing wiki-links under `## Quick Links` to point to `Decisions.md`,
+       `Worklog.md`, and `Tasks.md` (plus `Dashboard.canvas` only when it exists).
      - **Preserve all custom descriptions, manual notes, and user text byte-for-byte**.
      - Call `obsidian_edit_note` with `operation: "replace"` and `if_match: "<etag>"`.
    - **Option 2: Append Drift Audit Log**:
