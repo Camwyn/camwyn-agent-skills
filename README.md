@@ -61,9 +61,11 @@ camwyn-agent-skills/
         │   └── SKILL.md
         ├── obsidian-index/        # Master PARA Map of Content (MOC) & Canvas generator
         │   └── SKILL.md
-        ├── obsidian-vault-audit/  # Vault health, link integrity & mirror-drift diagnostic auditor
+        ├── obsidian-vault-audit/  # Vault health, link integrity, mirror-drift & inbox-backlog diagnostic auditor
         │   └── SKILL.md
         ├── obsidian-mirror/       # Establish/re-sync a repo<->vault content mirror pair
+        │   └── SKILL.md
+        ├── obsidian-status/       # On-demand "what needs my attention" briefing (not a scheduled job)
         │   └── SKILL.md
         └── obsidian-digest/       # Automated weekly/monthly executive rollup generator
             └── SKILL.md
@@ -83,8 +85,9 @@ Bi-directional sync, RAG grounding, and structured Architectural Decision Record
 | **[`obsidian-decision-sync`](skills/obsidian-rag/obsidian-decision-sync/SKILL.md)** | `/obsidian-decision` | Formats choices into structured ADRs (*Chosen, Rationale, Rejected Alternatives*) with automated superseding detection and bidirectional links. |
 | **[`obsidian-auto-sync`](skills/obsidian-rag/obsidian-auto-sync/SKILL.md)** | Autonomous / `/obsidian-flush` | Automatically records commits to `Worklog.md` (with 1,000-line milestone rotation), tickets to `Tasks.md`, and ADRs to `Decisions.md` with zero-data-loss replay queue. |
 | **[`obsidian-index`](skills/obsidian-rag/obsidian-index/SKILL.md)** | `/obsidian-index` | Compiles an authoritative master Map of Content (`PARA-Index.md`) and interactive spatial visual board (`PARA-Index.canvas`) across all 4 PARA pillars. |
-| **[`obsidian-vault-audit`](skills/obsidian-rag/obsidian-vault-audit/SKILL.md)** | `/audit-vault` | Multi-vector diagnostic scanner. Audits broken wikilinks, orphan notes, project companion completeness (`Overview`, `Tasks`, `Worklog`, `Decisions`), frontmatter schemas, and drifted content mirrors, with auto-remediation. |
+| **[`obsidian-vault-audit`](skills/obsidian-rag/obsidian-vault-audit/SKILL.md)** | `/audit-vault` | Multi-vector diagnostic scanner. Audits broken wikilinks, orphan notes, project companion completeness (`Overview`, `Tasks`, `Worklog`, `Decisions`), frontmatter schemas, drifted content mirrors, and a stale inbox backlog, with auto-remediation. |
 | **[`obsidian-mirror`](skills/obsidian-rag/obsidian-mirror/SKILL.md)** | `/obsidian-mirror` | Establishes or re-syncs a declared repo↔vault content mirror — two full, independent, kept-in-sync copies (e.g. a blog post and its vault dispatch), not a canonical-plus-stub pair. |
+| **[`obsidian-status`](skills/obsidian-rag/obsidian-status/SKILL.md)** | `/obsidian-status` | On-demand, ephemeral "what needs my attention" briefing — vault health, mirror drift, inbox backlog, open tasks. Not scheduled; a habit you run, not a job that runs itself. |
 | **[`obsidian-digest`](skills/obsidian-rag/obsidian-digest/SKILL.md)** | `/obsidian-digest` | Automated periodic rollup generator. Consolidates milestones, closed tasks, and ADRs across all active projects into weekly or monthly executive briefing notes. |
 
 ---
